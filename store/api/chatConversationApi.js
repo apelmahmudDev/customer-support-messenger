@@ -5,6 +5,7 @@ export const chatConversationApi = baseApi.injectEndpoints({
 		getChatConversation: build.query({
 			query: ({ page }) => `/user/openai/chat/conversation?page=${page}`,
 			transformResponse: (response) => response?.response?.records,
+			providesTags: ["Chat"],
 		}),
 	}),
 	overrideExisting: false,

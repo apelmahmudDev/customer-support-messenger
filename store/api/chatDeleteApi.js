@@ -8,7 +8,8 @@ export const chatDeleteApi = baseApi.injectEndpoints({
 				method: "POST",
 				body: chatId,
 			}),
-			onCacheEntryAdded({ chatId }, { dispatch, queryFulfilled }) {
+			invalidatesTags: ["Chat"],
+			onQueryStarted({ chatId }, { dispatch, queryFulfilled }) {
 				const patchResult = dispatch(
 					baseApi.util.updateQueryData(
 						"getChatConversation",

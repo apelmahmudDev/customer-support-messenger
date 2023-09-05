@@ -8,6 +8,7 @@ export const chatUpdateApi = baseApi.injectEndpoints({
 				method: "POST",
 				body,
 			}),
+			invalidatesTags: ["Chat"],
 		}),
 	}),
 	overrideExisting: false,

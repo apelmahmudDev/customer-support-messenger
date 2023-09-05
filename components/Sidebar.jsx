@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useGetChatConversationQuery } from "@/store/api/chatConversationApi";
+import { useUpdateChatMutation } from "@/store/api/chatUpdateApi";
 import { useDeleteChatMutation } from "@/store/api/chatDeleteApi";
 import { setOpenSidebar } from "@/store/slices/uiSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,16 +9,6 @@ import CheckIcon from "./CheckIcon";
 import CloseIcon from "./CloseIcon";
 import EditIcon from "./EditIcon";
 import TrashIcon from "./TrashIcon";
-
-const chatItem = [
-	// { id: 1, title: "Fab Chat" },
-	// { id: 2, title: "New Chat" },
-	{
-		id: 3,
-		title:
-			"Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, quis?",
-	},
-];
 
 const Sidebar = () => {
 	const dispatch = useDispatch();
@@ -31,9 +22,20 @@ const Sidebar = () => {
 	const [deleteChat] = useDeleteChatMutation();
 	const { data, isLoading } = useGetChatConversationQuery({ page: 1 });
 
+	// API endpoint method for update chat
+	const [updateChat] = useUpdateChatMutation();
+
 	const handleDeleteChat = () => {
 		deleteChat({
 			chatId: selectedId,
+		});
+	};
+
+	// console.log("value", value);
+	const handleUpdateChat = () => {
+		updateChat({
+			chatId: selectedId,
+			name: value,
 		});
 	};
 
@@ -43,7 +45,7 @@ const Sidebar = () => {
 
 	const handleInputBlur = () => {
 		setInputFocused(false);
-		setEnableEdit(false);
+		// setEnableEdit(false);
 	};
 
 	const handleSidebar = () => {
@@ -56,12 +58,14 @@ const Sidebar = () => {
 	};
 
 	const handleSubmitUpdate = () => {
-		const updatedConversation = {
-			chatId: selectedId,
-			name: value,
-		};
-		console.log(updatedConversation);
-		// do something here...
+		console.log("click");
+		// const updatedConversation = {
+		// 	chatId: selectedId,
+		// 	name: value,
+		// };
+		// console.log(updatedConversation);
+
+		handleUpdateChat();
 		setEnableEdit(false);
 	};
 
@@ -116,13 +120,16 @@ const Sidebar = () => {
 								) : (
 									<span onClick={() => setEnableEdit(false)}>
 										{item?.title}
+										{/* {selectedId === item?.id && value.length
+											? value
+											: item?.title} */}
 									</span>
 								)}
 
 								{selectedId === item?.id && (
 									<div>
 										{enableEdit ? (
-											<div className="absolute top-0 right-0 flex gap-0.5 justify-end h-full w-16 bg-gradient-to-l from-lighter-gray from-65%">
+											<div className="absolute z-40 top-0 right-0 flex gap-0.5 justify-end h-full w-16 bg-gradient-to-l from-lighter-gray from-65%">
 												<button onClick={handleSubmitUpdate}>
 													<CheckIcon />
 												</button>
@@ -131,7 +138,7 @@ const Sidebar = () => {
 												</button>
 											</div>
 										) : (
-											<div className="absolute top-0 right-0 flex gap-0.5 justify-end h-full w-16 bg-gradient-to-l from-lighter-gray from-65%">
+											<div className="absolute z-40 top-0 right-0 flex gap-0.5 justify-end h-full w-16 bg-gradient-to-l from-lighter-gray from-65%">
 												<button onClick={handleEnableEdit}>
 													<EditIcon />
 												</button>

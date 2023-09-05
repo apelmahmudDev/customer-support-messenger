@@ -15,5 +15,6 @@ const baseQuery = fetchBaseQuery({
 export const baseApi = createApi({
 	reducerPath: "splitApi",
 	baseQuery: baseQuery,
+	tagTypes: ["Chat"],
 	endpoints: () => ({}),
 });
