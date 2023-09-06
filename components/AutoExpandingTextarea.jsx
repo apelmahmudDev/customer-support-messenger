@@ -5,7 +5,6 @@ import useAutoSizeTextArea from "@/hook/useAutoSizeTextArea";
 import { useStoreChatMutation } from "@/store/api/chatStoreApi";
 
 const AutoExpandingTextarea = () => {
-	const [userValue, setUserValue] = useState("");
 	const [storeChat] = useStoreChatMutation();
 	const [isDisabled, setIsDisabled] = useState(true);
 
@@ -24,16 +23,14 @@ const AutoExpandingTextarea = () => {
 
 	const handleChange = (evt) => {
 		const val = evt.target?.value;
-
 		setValue(val);
 	};
-	console.log("isDisabled", isDisabled);
+
 	const handleSubmitUserValue = (e) => {
 		e.preventDefault();
 		storeChat({
-			promt: userValue,
+			promt: value,
 		});
-		console.log("userValue", userValue);
 	};
 
 	return (
