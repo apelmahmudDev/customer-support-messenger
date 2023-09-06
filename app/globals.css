@@ -9,20 +9,32 @@
 	box-sizing: border-box;
 }
 
-#auto-expanding-textarea {
-	max-height: 200px;
-	height: 24px;
-	font-size: 16px;
-	overflow-y: hidden;
+/* start scrollbar css */
+::-webkit-scrollbar {
+	width: 5px;
 }
 
-.chat-textarea {
-	@apply m-0 w-full resize-none border-0 bg-transparent focus:ring-0 focus-visible:ring-0 focus:outline-none p-0 py-2.5 pr-12 pl-3;
+::-webkit-scrollbar-thumb {
+	background: #888;
 }
 
-.chat-textarea-button {
-	@apply absolute p-2 rounded-full bottom-1 right-3 text-white transition-colors bg-white border;
+::-webkit-scrollbar-thumb:hover {
+	background: #555;
 }
+
+/* chat history scrollbar css */
+#chat-history::-webkit-scrollbar-thumb {
+	background: #888;
+	border-radius: 5px;
+}
+
+/* textarea scrollbar css */
+#chat-textarea::-webkit-scrollbar-thumb {
+	background: #888;
+	border-radius: 5px;
+}
+
+/* end scrollbar css */
 
 .chat-sidebar {
 	@apply fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-dark-secondary border-r sm:translate-x-0;
@@ -32,8 +44,8 @@
 	@apply mx-3 mt-3 flex items-center gap-2 sm:gap-3 text-white border border-white hover:bg-lighter-gray active:bg-transparent transition-all ease-out p-2 md:p-3 rounded-md md:rounded-lg break-all text-sm md:text-base overflow-hidden;
 }
 
-.item-end_overlay {
-	/* background-color: rgba(62, 62, 62, 1); */
+.chat-send-btn {
+	@apply absolute p-2 rounded-full right-2 disabled:bg-slate-400 text-black bottom-1.5 md:bottom-2 transition-colors disabled:opacity-40 bg-gradient-to-b from-[#ffcf4b] to-[#e60f83];
 }
 
 /* CSS for the modal overlay */
@@ -46,23 +58,4 @@
 	background-color: rgba(86, 88, 105, 0.5);
 	z-index: 40;
 	transition: background-color 0.3s ease;
-}
-
-::-webkit-scrollbar {
-	width: 5px;
-}
-
-::-webkit-scrollbar-thumb {
-	background: #888;
-	/* border-radius: 5px; */
-}
-
-::-webkit-scrollbar-thumb:hover {
-	background: #555;
-}
-
-/* chat history scrollbar css */
-#chat-history::-webkit-scrollbar-thumb {
-	background: #888;
-	border-radius: 5px;
 }
