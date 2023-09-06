@@ -5,11 +5,11 @@ import useAutoSizeTextArea from "@/hook/useAutoSizeTextArea";
 import { useStoreChatMutation } from "@/store/api/chatStoreApi";
 
 const AutoExpandingTextarea = () => {
-	const [storeChat] = useStoreChatMutation();
 	const [isDisabled, setIsDisabled] = useState(true);
-
 	const [value, setValue] = useState("");
 	const textAreaRef = useRef(null);
+
+	const [storeChat] = useStoreChatMutation();
 
 	useAutoSizeTextArea(textAreaRef.current, value);
 
@@ -21,9 +21,8 @@ const AutoExpandingTextarea = () => {
 		}
 	}, [value]);
 
-	const handleChange = (evt) => {
-		const val = evt.target?.value;
-		setValue(val);
+	const handleChange = (e) => {
+		setValue(e.target?.value);
 	};
 
 	const handleSubmitUserValue = (e) => {
@@ -31,12 +30,13 @@ const AutoExpandingTextarea = () => {
 		storeChat({
 			promt: value,
 		});
+		setValue("");
 	};
 
 	return (
 		<form onSubmit={handleSubmitUserValue} className="w-full">
 			<div className="chat-send-box">
-				<textarea
+				<input
 					className="chat-textarea"
 					id="chat-textarea"
 					onChange={handleChange}
@@ -46,7 +46,11 @@ const AutoExpandingTextarea = () => {
 					value={value}
 					style={{ maxHeight: "200px" }}
 				/>
-				<button className="chat-send-btn" disabled={isDisabled}>
+				<button
+					type="submit"
+					className="chat-send-btn"
+					disabled={isDisabled}
+				>
 					<span className="text-primary-dark" data-state="closed">
 						<SendIcon />
 					</span>
