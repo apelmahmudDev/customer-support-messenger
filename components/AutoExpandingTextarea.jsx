@@ -36,7 +36,7 @@ const AutoExpandingTextarea = () => {
 	return (
 		<form onSubmit={handleSubmitUserValue} className="w-full">
 			<div className="chat-send-box">
-				<input
+				<textarea
 					className="chat-textarea"
 					id="chat-textarea"
 					onChange={handleChange}
@@ -46,11 +46,7 @@ const AutoExpandingTextarea = () => {
 					value={value}
 					style={{ maxHeight: "200px" }}
 				/>
-				<button
-					type="submit"
-					className="chat-send-btn"
-					disabled={isDisabled}
-				>
+				<button className="chat-send-btn" disabled={isDisabled}>
 					<span className="text-primary-dark" data-state="closed">
 						<SendIcon />
 					</span>
