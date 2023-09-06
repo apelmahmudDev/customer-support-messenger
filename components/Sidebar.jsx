@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useGetChatConversationQuery } from "@/store/api/chatConversationApi";
 import { useUpdateChatMutation } from "@/store/api/chatUpdateApi";
 import { useDeleteChatMutation } from "@/store/api/chatDeleteApi";
+import { storeConversationId } from "@/store/slices/chatSlice";
 import { setOpenSidebar } from "@/store/slices/uiSlice";
 import { useDispatch, useSelector } from "react-redux";
 import CheckIcon from "./CheckIcon";
@@ -53,6 +54,7 @@ const Sidebar = () => {
 	};
 
 	const handleSelectConversation = (conversation) => {
+		dispatch(storeConversationId(conversation?.id));
 		setSelectedId(conversation?.id);
 		setValue(conversation.title);
 	};
@@ -95,7 +97,9 @@ const Sidebar = () => {
 						className="flex-1 px-3 font-medium overflow-hidden hover:overflow-y-auto"
 					>
 						{isLoading && (
-							<div className="text-white text-sm md:text-base">Loading...</div>
+							<div className="text-white text-sm md:text-base">
+								Loading...
+							</div>
 						)}
 						{data?.data?.map((item) => (
 							<li
@@ -113,7 +117,9 @@ const Sidebar = () => {
 										type="text"
 										autoFocus
 										value={value}
-										onChange={(e) => setValue(e.target.value)}
+										onChange={(e) =>
+											setValue(e.target.value)
+										}
 										onFocus={handleInputFocus}
 										onBlur={handleInputBlur}
 									/>
@@ -130,19 +136,31 @@ const Sidebar = () => {
 									<div>
 										{enableEdit ? (
 											<div className="absolute z-40 top-0 right-0 flex gap-0.5 justify-end h-full w-16 bg-gradient-to-l from-lighter-gray from-65%">
-												<button onClick={handleSubmitUpdate}>
+												<button
+													onClick={handleSubmitUpdate}
+												>
 													<CheckIcon />
 												</button>
-												<button onClick={() => setEnableEdit((prev) => !prev)}>
+												<button
+													onClick={() =>
+														setEnableEdit(
+															(prev) => !prev
+														)
+													}
+												>
 													<CloseIcon />
 												</button>
 											</div>
 										) : (
 											<div className="absolute z-40 top-0 right-0 flex gap-0.5 justify-end h-full w-16 bg-gradient-to-l from-lighter-gray from-65%">
-												<button onClick={handleEnableEdit}>
+												<button
+													onClick={handleEnableEdit}
+												>
 													<EditIcon />
 												</button>
-												<button onClick={handleDeleteChat}>
+												<button
+													onClick={handleDeleteChat}
+												>
 													<TrashIcon />
 												</button>
 											</div>
