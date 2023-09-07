@@ -57,6 +57,7 @@ const Sidebar = () => {
 		dispatch(storeConversationId(conversation?.id));
 		setSelectedId(conversation?.id);
 		setValue(conversation.title);
+		dispatch(setOpenSidebar());
 	};
 
 	const handleSubmitUpdate = () => {

@@ -1,10 +1,12 @@
 "use client";
 import SendIcon from "./SendIcon";
+import { useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import useAutoSizeTextArea from "@/hook/useAutoSizeTextArea";
 import { useStoreChatMutation } from "@/store/api/chatStoreApi";
 
 const AutoExpandingTextarea = () => {
+	const { conversationId } = useSelector((state) => state.chat);
 	const [isDisabled, setIsDisabled] = useState(true);
 	const [value, setValue] = useState("");
 	const textAreaRef = useRef(null);
@@ -29,6 +31,7 @@ const AutoExpandingTextarea = () => {
 		e.preventDefault();
 		storeChat({
 			promt: value,
+			chatId: conversationId,
 		});
 		setValue("");
 	};
