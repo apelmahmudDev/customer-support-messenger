@@ -5,7 +5,11 @@ export const chatHistoryApi = baseApi.injectEndpoints({
 		getChatHistory: build.query({
 			query: ({ conversationId, page }) =>
 				`/user/openai/chat/history/${conversationId}?page=${page}`,
-			transformResponse: (response) => response?.response?.records,
+			transformResponse: (response) => {
+				const { data, pagination } = response?.response?.records;
+				return { data: data?.reverse(), pagination };
+			},
+			providesTags: ["Chat"],
 		}),
 	}),
 	overrideExisting: false,
