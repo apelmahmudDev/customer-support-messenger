@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
 	openSidebar: false,
+	isBoatTyping: false,
 };
 
 export const uiSlice = createSlice({
@@ -11,8 +12,11 @@ export const uiSlice = createSlice({
 		setOpenSidebar: (state) => {
 			state.openSidebar = !state.openSidebar;
 		},
+		setBoatTyping: (state, action) => {
+			state.isBoatTyping = action.payload;
+		},
 	},
 });
 
-export const { setOpenSidebar } = uiSlice.actions;
+export const { setOpenSidebar, setBoatTyping } = uiSlice.actions;
 export default uiSlice.reducer;

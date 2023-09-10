@@ -7,9 +7,10 @@ import { useGetChatHistoryQuery } from "@/store/api/chatHistoryApi";
 import Loader from "./Loader";
 
 const Conversation = () => {
+	const { isBoatTyping } = useSelector((state) => state.ui);
 	const { conversationId } = useSelector((state) => state.chat);
 	const chatContainerRef = useRef(null);
-	const { data, isFetching } = useGetChatHistoryQuery(
+	const { data } = useGetChatHistoryQuery(
 		{
 			conversationId,
 			page: 1,
@@ -81,7 +82,7 @@ const Conversation = () => {
 					)}
 				</div>
 			))}
-			{true && (
+			{isBoatTyping && (
 				<div className="my-4 flex gap-2.5 items-start justify-start">
 					<div className="shrink-0 w-8 h-8 rounded-full bg-transparent overflow-hidden">
 						<Image
@@ -91,7 +92,7 @@ const Conversation = () => {
 							width="32"
 						/>
 					</div>
-					<Loader />
+					{<Loader />}
 				</div>
 			)}
 		</div>
