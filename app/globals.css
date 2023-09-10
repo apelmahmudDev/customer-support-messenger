@@ -16,22 +16,11 @@
 
 ::-webkit-scrollbar-thumb {
 	background: #888;
+	border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
 	background: #555;
-}
-
-/* chat history scrollbar css */
-#chat-history::-webkit-scrollbar-thumb {
-	background: #888;
-	border-radius: 5px;
-}
-
-/* textarea scrollbar css */
-#chat-textarea::-webkit-scrollbar-thumb {
-	background: #888;
-	border-radius: 5px;
 }
 
 /* end scrollbar css */

@@ -14,9 +14,7 @@ export default function Home() {
 					<Sidebar />
 				</aside>
 				<main className="h-full flex flex-col overflow-hidden sm:ml-64">
-					<div className="flex-1 overflow-y-auto mx-auto w-full p-4">
-						<Conversation />
-					</div>
+					<Conversation />
 					<div className="p-4 mx-auto w-full max-w-screen-lg">
 						<AutoExpandingTextarea />
 					</div>
