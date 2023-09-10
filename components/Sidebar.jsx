@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useGetChatConversationQuery } from "@/store/api/chatConversationApi";
 import { useUpdateChatMutation } from "@/store/api/chatUpdateApi";
 import { useDeleteChatMutation } from "@/store/api/chatDeleteApi";
@@ -13,6 +13,7 @@ import TrashIcon from "./TrashIcon";
 
 const Sidebar = () => {
 	const dispatch = useDispatch();
+	const { conversationId } = useSelector((state) => state.chat);
 	const { openSidebar } = useSelector((state) => state.ui);
 	const [isInputFocused, setInputFocused] = useState(false);
 	const [selectedId, setSelectedId] = useState(null);
@@ -32,7 +33,7 @@ const Sidebar = () => {
 		});
 	};
 
-	// console.log("value", value);
+	// console.log("value", data);
 	const handleUpdateChat = () => {
 		updateChat({
 			chatId: selectedId,
@@ -76,6 +77,21 @@ const Sidebar = () => {
 		setEnableEdit(true);
 	};
 
+	// handle new chat
+	const handleNewChat = () => {
+		dispatch(storeConversationId(null));
+		setSelectedId(null);
+		setValue("");
+		dispatch(setOpenSidebar());
+	};
+
+	// auto select first conversation
+	useEffect(() => {
+		if (conversationId && data?.data?.length > 0) {
+			setSelectedId(conversationId);
+		}
+	}, [conversationId, data?.data?.length]);
+
 	return (
 		<div>
 			<div
@@ -107,12 +123,12 @@ const Sidebar = () => {
 								onClick={() => handleSelectConversation(item)}
 								key={item.id}
 								className={`relative text-white break-all overflow-hidden text-ellipsis whitespace-nowrap rounded-md text-sm md:text-base cursor-pointer p-2 ${
-									selectedId === item?.id
+									selectedId == item?.id
 										? "bg-lighter-gray hover:bg-lighter-gray"
 										: "bg-transparent hover:bg-lighter-gray/40"
 								}`}
 							>
-								{enableEdit && selectedId === item.id ? (
+								{enableEdit && selectedId == item.id ? (
 									<input
 										className={`focus:outline-0 focus:border focus:border-white/10 focus:rounded-sm w-[calc(100%-43px)] bg-lighter-gray text-white text-sm md:text-base break-all`}
 										type="text"
@@ -133,7 +149,7 @@ const Sidebar = () => {
 									</span>
 								)}
 
-								{selectedId === item?.id && (
+								{selectedId == item?.id && (
 									<div>
 										{enableEdit ? (
 											<div className="absolute z-40 top-0 right-0 flex gap-0.5 justify-end h-full w-16 bg-gradient-to-l from-lighter-gray from-65%">
@@ -172,7 +188,10 @@ const Sidebar = () => {
 						))}
 					</ul>
 
-					<button className="new-chat__button">
+					<button
+						onClick={handleNewChat}
+						className="new-chat__button"
+					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"

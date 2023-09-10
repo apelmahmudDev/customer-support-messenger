@@ -32,12 +32,15 @@ import Loader from "./Loader";
 
 const Conversation = () => {
 	const { conversationId } = useSelector((state) => state.chat);
-	const { data, isFetching } = useGetChatHistoryQuery({
-		conversationId,
-		page: 1,
-	});
+	const { data, isFetching } = useGetChatHistoryQuery(
+		{
+			conversationId,
+			page: 1,
+		},
+		{ skip: !conversationId }
+	);
 	return (
-		<>
+		<div>
 			{data?.data?.map((chat) => (
 				<div key={chat?.id}>
 					{/* right conversation*/}
@@ -104,7 +107,7 @@ const Conversation = () => {
 					<Loader />
 				</div>
 			)}
-		</>
+		</div>
 	);
 };
 

@@ -1,25 +1,27 @@
 "use client";
 import SendIcon from "./SendIcon";
-import { useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import useAutoSizeTextArea from "@/hook/useAutoSizeTextArea";
 import { useStoreChatMutation } from "@/store/api/chatStoreApi";
+import { storeConversationId } from "@/store/slices/chatSlice";
 
 const AutoExpandingTextarea = () => {
+	const dispatch = useDispatch();
 	const { conversationId } = useSelector((state) => state.chat);
 	const [isDisabled, setIsDisabled] = useState(true);
 	const [value, setValue] = useState("");
 	const textAreaRef = useRef(null);
 
-	const [storeChat] = useStoreChatMutation();
+	const [storeChat, { data, isSuccess }] = useStoreChatMutation();
 
 	useAutoSizeTextArea(textAreaRef.current, value);
 
 	useEffect(() => {
-		if (value.trim() == "") {
-			setIsDisabled(true);
-		} else {
+		if (value.length > 0) {
 			setIsDisabled(false);
+		} else {
+			setIsDisabled(true);
 		}
 	}, [value]);
 
@@ -36,6 +38,13 @@ const AutoExpandingTextarea = () => {
 		setValue("");
 	};
 
+	// set conversationId after sending message
+	useEffect(() => {
+		if (isSuccess && data?.id) {
+			dispatch(storeConversationId(data?.id));
+		}
+	}, [isSuccess, data?.id, dispatch]);
+
 	return (
 		<form onSubmit={handleSubmitUserValue} className="w-full">
 			<div className="chat-send-box">
@@ -48,6 +57,7 @@ const AutoExpandingTextarea = () => {
 					rows={1}
 					value={value}
 					style={{ maxHeight: "200px" }}
+					autoFocus
 				/>
 				<button className="chat-send-btn" disabled={isDisabled}>
 					<span className="text-primary-dark" data-state="closed">
