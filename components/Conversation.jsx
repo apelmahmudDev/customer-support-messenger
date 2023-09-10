@@ -1,37 +1,14 @@
 "use client";
 import Image from "next/image";
+import { useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import formatTimeAgo from "@/lib/formatTime";
 import { useGetChatHistoryQuery } from "@/store/api/chatHistoryApi";
 import Loader from "./Loader";
 
-// const msg = [
-// 	{
-// 		id: 31,
-// 		user_name: "Agatha Williams",
-// 		user_message: "generate a birthday caption for wife",
-// 		bot_name: "Genie",
-// 		bot_message: "Happy birthday to my beautiful wife!",
-// 		tokens: 221,
-// 		words: 166,
-// 		characters: 254,
-// 		created_at: "06-09-2023 10:40 AM",
-// 	},
-// 	{
-// 		id: 33,
-// 		user_name: "Agatha Williams",
-// 		user_message: "generate a birthday caption for wife",
-// 		bot_name: "Genie",
-// 		bot_message: "Happy birthday to my beautiful wife!",
-// 		tokens: 221,
-// 		words: 166,
-// 		characters: 254,
-// 		created_at: "06-09-2023 10:40 AM",
-// 	},
-// ];
-
 const Conversation = () => {
 	const { conversationId } = useSelector((state) => state.chat);
+	const chatContainerRef = useRef(null);
 	const { data, isFetching } = useGetChatHistoryQuery(
 		{
 			conversationId,
@@ -39,8 +16,18 @@ const Conversation = () => {
 		},
 		{ skip: !conversationId }
 	);
+
+	useEffect(() => {
+		// Scroll to the bottom of the chat container when messages change.
+		chatContainerRef.current.scrollTop =
+			chatContainerRef.current.scrollHeight;
+	}, [data?.data]);
+
 	return (
-		<div>
+		<div
+			className="flex-1 overflow-y-auto mx-auto w-full p-4"
+			ref={chatContainerRef}
+		>
 			{data?.data?.map((chat) => (
 				<div key={chat?.id}>
 					{/* right conversation*/}
