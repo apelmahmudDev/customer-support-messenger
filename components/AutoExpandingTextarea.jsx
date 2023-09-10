@@ -38,6 +38,17 @@ const AutoExpandingTextarea = () => {
 		setValue("");
 	};
 
+	const handleKeyPress = (e) => {
+		if (value.length && e.key === "Enter" && !e.shiftKey) {
+			e.preventDefault();
+			storeChat({
+				promt: value,
+				chatId: conversationId,
+			});
+			setValue("");
+		}
+	};
+
 	// set conversationId after sending message
 	useEffect(() => {
 		if (isSuccess && data?.id) {
@@ -52,6 +63,7 @@ const AutoExpandingTextarea = () => {
 					className="chat-textarea"
 					id="chat-textarea"
 					onChange={handleChange}
+					onKeyDown={handleKeyPress}
 					placeholder="Write your message.."
 					ref={textAreaRef}
 					rows={1}
