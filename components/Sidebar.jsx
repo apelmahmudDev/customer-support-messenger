@@ -10,6 +10,7 @@ import CheckIcon from "./CheckIcon";
 import CloseIcon from "./CloseIcon";
 import EditIcon from "./EditIcon";
 import TrashIcon from "./TrashIcon";
+import MessageIcon from "./MessageIcon";
 
 const Sidebar = () => {
 	const dispatch = useDispatch();
@@ -122,7 +123,7 @@ const Sidebar = () => {
 							<li
 								onClick={() => handleSelectConversation(item)}
 								key={item.id}
-								className={`relative text-white break-all overflow-hidden text-ellipsis whitespace-nowrap rounded-md text-sm md:text-base cursor-pointer p-2 ${
+								className={`relative flex items-center gap-1 text-white break-all overflow-hidden text-ellipsis whitespace-nowrap rounded-md text-sm md:text-base cursor-pointer px-2 py-3 ${
 									selectedId == item?.id
 										? "bg-lighter-gray hover:bg-lighter-gray"
 										: "bg-transparent hover:bg-lighter-gray/40"
@@ -141,7 +142,11 @@ const Sidebar = () => {
 										onBlur={handleInputBlur}
 									/>
 								) : (
-									<span onClick={() => setEnableEdit(false)}>
+									<span
+										className="flex items-center gap-1"
+										onClick={() => setEnableEdit(false)}
+									>
+										<MessageIcon />
 										{item?.title}
 										{/* {selectedId === item?.id && value.length
 											? value
