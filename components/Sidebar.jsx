@@ -11,19 +11,25 @@ import CloseIcon from "./CloseIcon";
 import EditIcon from "./EditIcon";
 import TrashIcon from "./TrashIcon";
 import MessageIcon from "./MessageIcon";
+import InfiniteScroller from "./InfiniteScroller";
 
 const Sidebar = () => {
 	const dispatch = useDispatch();
 	const { conversationId } = useSelector((state) => state.chat);
 	const { openSidebar } = useSelector((state) => state.ui);
 	const [isInputFocused, setInputFocused] = useState(false);
+	const [conversation, setConversation] = useState([]);
+	const [hasMore, setHasMore] = useState(true);
+	const [page, setPage] = useState(1);
 	const [selectedId, setSelectedId] = useState(null);
 	const [enableEdit, setEnableEdit] = useState(false);
 	const [value, setValue] = useState("");
 
 	// API endpoint method for delete chat
 	const [deleteChat] = useDeleteChatMutation();
-	const { data, isLoading } = useGetChatConversationQuery({ page: 1 });
+	const { data, isLoading, isFetching } = useGetChatConversationQuery({
+		page: page,
+	});
 
 	// API endpoint method for update chat
 	const [updateChat] = useUpdateChatMutation();
@@ -93,6 +99,32 @@ const Sidebar = () => {
 		}
 	}, [conversationId, data?.data?.length]);
 
+	// Load more data
+	useEffect(() => {
+		loadItems();
+	}, [data?.data]);
+
+	useEffect(() => {
+		if (
+			!isLoading &&
+			!isFetching &&
+			data?.pagination?.next_page_url == null
+		) {
+			setHasMore(false);
+		}
+	}, [data?.data, isFetching, isLoading, hasMore]);
+
+	const loadItems = () => {
+		if (data) {
+			const newItems = [...conversation, ...data?.data];
+			const uniqueProducts = newItems.filter(
+				(product, index, self) =>
+					index === self.findIndex((p) => p.id === product.id)
+			);
+			setConversation(uniqueProducts);
+		}
+	};
+
 	return (
 		<div>
 			<div
@@ -110,88 +142,97 @@ const Sidebar = () => {
 				aria-label="Sidebar"
 			>
 				<div className="flex flex-col h-full pb-4 overflow-hidden bg-dark-secondary">
-					<ul
-						id="chat-history"
+					<InfiniteScroller
+						dataLength={conversation.length}
+						next={loadItems}
+						setPage={setPage}
+						isLoading={isLoading || isFetching}
+						hasMore={hasMore}
 						className="flex-1 px-3 font-medium overflow-hidden hover:overflow-y-auto"
 					>
-						{isLoading && (
-							<div className="text-white text-sm md:text-base">
-								Loading...
-							</div>
-						)}
-						{data?.data?.map((item) => (
-							<li
-								onClick={() => handleSelectConversation(item)}
-								key={item.id}
-								className={`relative flex items-center gap-1 text-white break-all overflow-hidden text-ellipsis whitespace-nowrap rounded-md text-sm md:text-base cursor-pointer px-2 py-3 ${
-									selectedId == item?.id
-										? "bg-lighter-gray hover:bg-lighter-gray"
-										: "bg-transparent hover:bg-lighter-gray/40"
-								}`}
-							>
-								{enableEdit && selectedId == item.id ? (
-									<input
-										className={`focus:outline-0 focus:border focus:border-white/10 focus:rounded-sm w-[calc(100%-43px)] bg-lighter-gray text-white text-sm md:text-base break-all`}
-										type="text"
-										autoFocus
-										value={value}
-										onChange={(e) =>
-											setValue(e.target.value)
-										}
-										onFocus={handleInputFocus}
-										onBlur={handleInputBlur}
-									/>
-								) : (
-									<span
-										className="flex items-center gap-1"
-										onClick={() => setEnableEdit(false)}
-									>
-										<MessageIcon />
-										{item?.title}
-										{/* {selectedId === item?.id && value.length
+						<ul>
+							{conversation?.map((item) => (
+								<li
+									onClick={() =>
+										handleSelectConversation(item)
+									}
+									key={item.id}
+									className={`relative flex items-center gap-1 text-white break-all overflow-hidden text-ellipsis whitespace-nowrap rounded-md text-sm md:text-base cursor-pointer px-2 py-3 ${
+										selectedId == item?.id
+											? "bg-lighter-gray hover:bg-lighter-gray"
+											: "bg-transparent hover:bg-lighter-gray/40"
+									}`}
+								>
+									{enableEdit && selectedId == item.id ? (
+										<input
+											className={`focus:outline-0 focus:border focus:border-white/10 focus:rounded-sm w-[calc(100%-43px)] bg-lighter-gray text-white text-sm md:text-base break-all`}
+											type="text"
+											autoFocus
+											value={value}
+											onChange={(e) =>
+												setValue(e.target.value)
+											}
+											onFocus={handleInputFocus}
+											onBlur={handleInputBlur}
+										/>
+									) : (
+										<span
+											className="flex items-center gap-1"
+											onClick={() => setEnableEdit(false)}
+										>
+											<MessageIcon />
+											{item?.title}
+											{/* {selectedId === item?.id && value.length
 											? value
 											: item?.title} */}
-									</span>
-								)}
+										</span>
+									)}
 
-								{selectedId == item?.id && (
-									<div>
-										{enableEdit ? (
-											<div className="absolute z-40 top-0 right-0 flex gap-0.5 justify-end h-full w-16 bg-gradient-to-l from-lighter-gray from-65%">
-												<button
-													onClick={handleSubmitUpdate}
-												>
-													<CheckIcon />
-												</button>
-												<button
-													onClick={() =>
-														setEnableEdit(
-															(prev) => !prev
-														)
-													}
-												>
-													<CloseIcon />
-												</button>
-											</div>
-										) : (
-											<div className="absolute z-40 top-0 right-0 flex gap-0.5 justify-end h-full w-16 bg-gradient-to-l from-lighter-gray from-65%">
-												<button
-													onClick={handleEnableEdit}
-												>
-													<EditIcon />
-												</button>
-												<button
-													onClick={handleDeleteChat}
-												>
-													<TrashIcon />
-												</button>
-											</div>
-										)}
-									</div>
-								)}
-							</li>
-						))}
-					</ul>
+									{selectedId == item?.id && (
+										<div>
+											{enableEdit ? (
+												<div className="absolute z-40 top-0 right-0 flex gap-0.5 justify-end h-full w-16 bg-gradient-to-l from-lighter-gray from-65%">
+													<button
+														onClick={
+															handleSubmitUpdate
+														}
+													>
+														<CheckIcon />
+													</button>
+													<button
+														onClick={() =>
+															setEnableEdit(
+																(prev) => !prev
+															)
+														}
+													>
+														<CloseIcon />
+													</button>
+												</div>
+											) : (
+												<div className="absolute z-40 top-0 right-0 flex gap-0.5 justify-end h-full w-16 bg-gradient-to-l from-lighter-gray from-65%">
+													<button
+														onClick={
+															handleEnableEdit
+														}
+													>
+														<EditIcon />
+													</button>
+													<button
+														onClick={
+															handleDeleteChat
+														}
+													>
+														<TrashIcon />
+													</button>
+												</div>
+											)}
+										</div>
+									)}
+								</li>
+							))}
+						</ul>
+					</InfiniteScroller>
 
 					<button
 						onClick={handleNewChat}
