@@ -1,101 +1,72 @@
 "use client";
-import Image from "next/image";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import formatTimeAgo from "@/lib/formatTime";
 import { useGetChatHistoryQuery } from "@/store/api/chatHistoryApi";
-import Loader from "./Loader";
+import Timeline from "./Timeline";
 
 const Conversation = () => {
-	const { isBoatTyping } = useSelector((state) => state.ui);
 	const { conversationId } = useSelector((state) => state.chat);
-	const chatContainerRef = useRef(null);
-	const { data } = useGetChatHistoryQuery(
+	const [messages, setMessages] = useState([]);
+	const [hasMore, setHasMore] = useState(true);
+	const [page, setPage] = useState(1);
+	const timelineRef = useRef();
+
+	// fetch messages when conversationId changes
+	const { data, isSuccess, isLoading } = useGetChatHistoryQuery(
 		{
 			conversationId,
-			page: 1,
+			page: page,
 		},
 		{ skip: !conversationId }
 	);
 
+	// first time load message and then when page changes load more messages
 	useEffect(() => {
-		// Scroll to the bottom of the chat container when messages change.
-		chatContainerRef.current.scrollTop =
-			chatContainerRef.current.scrollHeight;
-	}, [data?.data]);
+		if (isSuccess) {
+			setMessages(data?.data);
+		}
+	}, [isSuccess]);
+
+	useEffect(() => {
+		if (page > 1 && isSuccess) {
+			// setMessages((prev) => [...prev, ...data?.data]);
+			// unique messages only
+			const uniqueMessages = data?.data?.filter(
+				(item) => !messages?.some((item2) => item?.id === item2?.id)
+			);
+			setMessages((prev) => [...prev, ...uniqueMessages]);
+		}
+	}, [page, isSuccess, data?.data]);
+
+	const fetch = () => {
+		if (messages?.length < data?.pagination?.total) {
+			setHasMore(true);
+			setPage(page + 1);
+		} else {
+			setHasMore(false);
+		}
+	};
+
+	// when all messages are loaded then hasMore is false
+	useEffect(() => {
+		if (data?.pagination?.total === messages?.length) {
+			setHasMore(false);
+		}
+	}, [messages]);
+
+	// if conversationId changes then reset page and messages
+	useEffect(() => {
+		setPage(1);
+		setMessages([]);
+	}, [conversationId]);
 
 	return (
-		<div
-			className="flex-1 overflow-y-auto mx-auto w-full p-4"
-			ref={chatContainerRef}
-		>
-			{data?.data?.map((chat) => (
-				<div key={chat?.id}>
-					{/* right conversation*/}
-					{chat?.user_message && (
-						<div className="mb-4 flex gap-2.5 items-start justify-end">
-							<div>
-								<div className="bg-purple rounded-lg p-3">
-									<p className="text-white text-start text-sm md:text-base font-medium break-all">
-										{chat?.user_message}
-									</p>
-								</div>
-								<div className="flex justify-end">
-									<p className="text-xs text-gray mt-1 font-medium break-all">
-										{formatTimeAgo(chat?.created_at)}
-									</p>
-								</div>
-							</div>
-							<Image
-								className="shrink-0 w-8 h-8 rounded-full"
-								src="/assets/bot.png"
-								alt="boat"
-								height="32"
-								width="32"
-							/>
-						</div>
-					)}
-					{/* left conversation*/}
-					{chat?.bot_message && (
-						<div className="mb-4 flex gap-2.5 items-start justify-start">
-							<div className="shrink-0 w-8 h-8 rounded-full bg-transparent overflow-hidden">
-								<Image
-									src="/assets/ai.png"
-									alt="boat"
-									height="32"
-									width="32"
-								/>
-							</div>
-							<div>
-								<div className="bg-off-white rounded-lg p-3">
-									<p className="text-[#141414] text-start text-sm md:text-base font-medium break-all">
-										{chat?.bot_message}
-									</p>
-								</div>
-								<div className="flex justify-start">
-									<p className="text-xs text-gray mt-1 font-medium break-all">
-										{formatTimeAgo(chat?.created_at)}
-									</p>
-								</div>
-							</div>
-						</div>
-					)}
-				</div>
-			))}
-			{isBoatTyping && (
-				<div className="my-4 flex gap-2.5 items-start justify-start">
-					<div className="shrink-0 w-8 h-8 rounded-full bg-transparent overflow-hidden">
-						<Image
-							src="/assets/ai.png"
-							alt="boat"
-							height="32"
-							width="32"
-						/>
-					</div>
-					{<Loader />}
-				</div>
-			)}
-		</div>
+		<Timeline
+			innerRef={timelineRef}
+			messages={messages}
+			fetch={fetch}
+			hasMore={hasMore}
+		/>
 	);
 };
 
