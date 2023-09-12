@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
 
-module.exports = nextConfig
+const nextConfig = {
+	output: "export",
+	assetPrefix: `/${process.env.ASSET_PREFIX}`,
+};
+
+module.exports = nextConfig;
