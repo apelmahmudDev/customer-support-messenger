@@ -1,4 +1,4 @@
-import { setBoatTyping } from "../slices/uiSlice";
+import { setBotTyping } from "../slices/uiSlice";
 import { baseApi } from "./base";
 
 export const chatStoreApi = baseApi.injectEndpoints({
@@ -14,12 +14,12 @@ export const chatStoreApi = baseApi.injectEndpoints({
 				{ promt, chatId },
 				{ dispatch, queryFulfilled }
 			) {
-				dispatch(setBoatTyping(true));
+				dispatch(setBotTyping(true));
 				try {
 					const result = await queryFulfilled;
-					dispatch(setBoatTyping(false));
+					dispatch(setBotTyping(false));
 				} catch (error) {
-					dispatch(setBoatTyping(false));
+					dispatch(setBotTyping(false));
 				}
 			},
 			invalidatesTags: ["Chat"],
