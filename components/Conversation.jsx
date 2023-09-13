@@ -12,7 +12,7 @@ const Conversation = () => {
 	const timelineRef = useRef();
 
 	// fetch messages when conversationId changes
-	const { data, isSuccess, isLoading } = useGetChatHistoryQuery(
+	const { data, isSuccess, isLoading, isFetching } = useGetChatHistoryQuery(
 		{
 			conversationId,
 			page: page,
@@ -29,7 +29,6 @@ const Conversation = () => {
 
 	useEffect(() => {
 		if (page > 1 && isSuccess) {
-			// setMessages((prev) => [...prev, ...data?.data]);
 			// unique messages only
 			const uniqueMessages = data?.data?.filter(
 				(item) => !messages?.some((item2) => item?.id === item2?.id)
@@ -62,10 +61,12 @@ const Conversation = () => {
 
 	return (
 		<Timeline
-			innerRef={timelineRef}
-			messages={messages}
 			fetch={fetch}
 			hasMore={hasMore}
+			messages={messages}
+			innerRef={timelineRef}
+			isLoading={isLoading}
+			isFetching={isFetching}
 		/>
 	);
 };
