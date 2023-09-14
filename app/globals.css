@@ -57,37 +57,6 @@
 	transition: background-color 0.3s ease;
 }
 
-/* start loader css */
-.chat-loading {
-	height: 35px;
-	width: 85px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-
-.loading-circle {
-	width: 0.5rem;
-	height: 0.5rem;
-	margin: 0 0.3rem;
-	border-radius: 50%;
-	animation: 0.6s bounce infinite alternate;
-	&:nth-child(2) {
-		animation-delay: 0.3s;
-	}
-	&:nth-child(3) {
-		animation-delay: 0.6s;
-	}
-}
-
-@keyframes bounce {
-	to {
-		opacity: 0.4;
-		transform: translate3d(0, -0.5rem, 0);
-	}
-}
-/* end loader css */
-
 /* start spinner css */
 .spinner_Wezc {
 	transform-origin: center;
@@ -134,3 +103,43 @@
 }
 
 /* end spinner css */
+
+/* start typing animation css*/
+.bot-typing__wrap .circle {
+	background-color: #763cd4;
+	border-radius: 50%;
+	margin-right: 4px;
+	height: 7px;
+	width: 7px;
+	vertical-align: middle;
+	display: inline-block;
+	animation: botTypingAnimation 1.8s infinite ease-in-out;
+}
+.bot-typing__wrap .circle:nth-child(1) {
+	animation-delay: 200ms;
+}
+.bot-typing__wrap .circle:nth-child(2) {
+	animation-delay: 300ms;
+}
+.bot-typing__wrap .circle:nth-child(3) {
+	animation-delay: 400ms;
+}
+.bot-typing__wrap .circle:last-child {
+	margin-right: 0;
+}
+
+@keyframes botTypingAnimation {
+	0% {
+		transform: translateY(0px);
+		background-color: #763cd4;
+	}
+	28% {
+		transform: translateY(-7px);
+		background-color: #916ccd;
+	}
+	44% {
+		transform: translateY(0px);
+		background-color: #c2afe0;
+	}
+}
+/* end typing animation css */
