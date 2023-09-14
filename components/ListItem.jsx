@@ -5,9 +5,36 @@ import CloseIcon from "./CloseIcon";
 import CheckIcon from "./CheckIcon";
 import TrashIcon from "./TrashIcon";
 import MessageIcon from "./MessageIcon";
+import { useUpdateChatMutation } from "@/store/api/chatUpdateApi";
 
 const ListItem = ({ id, title }) => {
 	const [enableEdit, setEnableEdit] = useState(false);
+	const [value, setValue] = useState(title);
+	const [updateChat] = useUpdateChatMutation();
+
+	const handleUpdateChat = async () => {
+		const data = {
+			chatId: id,
+			name: value,
+		};
+
+		await updateChat(data);
+		setEnableEdit(false);
+	};
+
+	const handleEnterKeyPress = async (e) => {
+		if (value.length && e.key === "Enter" && !e.shiftKey) {
+			e.preventDefault();
+
+			const data = {
+				chatId: id,
+				name: value,
+			};
+
+			await updateChat(data);
+			setEnableEdit(false);
+		}
+	};
 
 	return (
 		<li
@@ -21,17 +48,18 @@ const ListItem = ({ id, title }) => {
 				<MessageIcon />
 				{enableEdit ? (
 					<input
+						onChange={(e) => setValue(e.target.value)}
+						onKeyDown={(e) => handleEnterKeyPress(e)}
 						type="text"
 						name="item"
 						autoFocus
-						defaultValue={title}
+						value={value}
 						className={`focus:outline-0 focus:border focus:border-white/10 focus:rounded-sm w-[calc(100%-80px)] bg-transparent text-white text-sm md:text-base break-all`}
 					/>
 				) : (
-					<span>{title}</span>
+					<span>{value}</span>
 				)}
 			</div>
-
 			<div
 				className={`absolute z-40 top-0 right-0 invisible group-hover/item:visible flex gap-0.5 justify-end h-full ${
 					false ? "w-16" : "w-20"
@@ -39,7 +67,7 @@ const ListItem = ({ id, title }) => {
 			>
 				{enableEdit ? (
 					<>
-						<button>
+						<button onClick={handleUpdateChat}>
 							<CheckIcon />
 						</button>
 						<button onClick={() => setEnableEdit(false)}>
