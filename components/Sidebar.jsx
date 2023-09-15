@@ -1,8 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useGetChatConversationQuery } from "@/store/api/chatConversationApi";
+import InfiniteScroll from "react-infinite-scroll-component";
 import NewChatButton from "./NewChatButton";
-import SidebarScroller from "./SidebarScroller";
+import Spinner from "./Spinner";
+import ListItem from "./ListItem";
 
 const Sidebar = () => {
 	const [page, setPage] = useState(1);
@@ -44,12 +46,11 @@ const Sidebar = () => {
 		}
 	}, [chatHistory]);
 
+	console.log("chatHistory", chatHistory);
 	return (
 		<div>
 			<div
-				className={`${
-					false ? "sidebar-overlay" : "hidden"
-				} block sm:hidden`}
+				className={`${false ? "sidebar-overlay" : "hidden"} block sm:hidden`}
 			></div>
 
 			<div
@@ -64,13 +65,24 @@ const Sidebar = () => {
 						id="chatSidebarScrollableDiv"
 						className="flex-1 px-3 font-medium overflow-hidden hover:overflow-y-auto"
 					>
-						<SidebarScroller
-							data={chatHistory}
-							isFetching={isFetching}
-							isLoading={isLoading}
+						<InfiniteScroll
+							dataLength={chatHistory?.length || []}
+							next={handleFetChatHistory}
 							hasMore={hasMore}
-							fetch={handleFetChatHistory}
-						/>
+							loader={
+								isFetching && (
+									<div className="flex justify-center h-full items-center">
+										<Spinner />
+									</div>
+								)
+							}
+							scrollableTarget="chatSidebarScrollableDiv"
+							scrollThreshold={1}
+						>
+							{chatHistory?.map((item) => (
+								<ListItem key={item?.id} id={item?.id} title={item?.title} />
+							))}
+						</InfiniteScroll>
 					</div>
 					<NewChatButton />
 				</div>

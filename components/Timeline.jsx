@@ -23,14 +23,7 @@ const Timeline = ({
 				next={fetch}
 				inverse={true}
 				hasMore={hasMore}
-				loader={
-					(isLoading || isFetching) && (
-						<ConversationLoader
-							isFetching={isFetching}
-							isLoading={isLoading}
-						/>
-					)
-				}
+				loader={<ConversationLoader />}
 				className="flex flex-col-reverse"
 				scrollableTarget="scrollableDiv"
 			>

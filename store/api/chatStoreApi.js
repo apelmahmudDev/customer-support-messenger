@@ -10,17 +10,29 @@ export const chatStoreApi = baseApi.injectEndpoints({
 				body,
 			}),
 			transformResponse: (response) => response?.response?.records,
-			async onQueryStarted(
-				{ promt, chatId },
-				{ dispatch, queryFulfilled }
-			) {
-				dispatch(setBotTyping(true));
+
+			async onQueryStarted({ body }, { queryFulfilled, dispatch }) {
 				try {
-					const result = await queryFulfilled;
-					dispatch(setBotTyping(false));
-				} catch (error) {
-					dispatch(setBotTyping(false));
-				}
+					const conversations = await queryFulfilled;
+
+					if (conversations?.data) {
+						// update conversation cache pessimistically start
+						console.log("conversations", conversations);
+						const patchResult = dispatch(
+							baseApi.util.updateQueryData(
+								"getChatConversation",
+								undefined,
+								(draft) => {
+									draft.data = [...draft.data, ...conversations.data];
+									return draft;
+								}
+							)
+						);
+						console.log("draft", patchResult);
+
+						// update messages cache pessimistically end
+					}
+				} catch (err) {}
 			},
 			invalidatesTags: ["Chat"],
 		}),

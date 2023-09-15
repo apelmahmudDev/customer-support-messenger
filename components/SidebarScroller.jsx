@@ -15,7 +15,13 @@ const SidebarScroller = ({
 			dataLength={data?.length}
 			next={fetch}
 			hasMore={hasMore}
-			loader={isLoading && <Spinner />}
+			loader={
+				isFetching && (
+					<div className="flex justify-center h-full items-center">
+						<Spinner />
+					</div>
+				)
+			}
 			scrollableTarget="chatSidebarScrollableDiv"
 			scrollThreshold={1}
 		>
