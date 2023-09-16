@@ -7,7 +7,13 @@ import TrashIcon from "./TrashIcon";
 import MessageIcon from "./MessageIcon";
 import { useUpdateChatMutation } from "@/store/api/chatUpdateApi";
 
-const ListItem = ({ id, title }) => {
+const ListItem = ({
+	id,
+	title,
+	handleSelectChatId,
+	selectedId,
+	handleDeleteChat,
+}) => {
 	const [enableEdit, setEnableEdit] = useState(false);
 	const [value, setValue] = useState(title);
 	const [updateChat] = useUpdateChatMutation();
@@ -18,11 +24,11 @@ const ListItem = ({ id, title }) => {
 			name: value,
 		};
 
-		await updateChat(data);
 		setEnableEdit(false);
+		await updateChat(data);
 	};
 
-	const handleEnterKeyPress = async (e) => {
+	const handleUpdateChatByEnterKeyPress = async (e) => {
 		if (value.length && e.key === "Enter" && !e.shiftKey) {
 			e.preventDefault();
 
@@ -31,15 +37,16 @@ const ListItem = ({ id, title }) => {
 				name: value,
 			};
 
-			await updateChat(data);
 			setEnableEdit(false);
+			await updateChat(data);
 		}
 	};
 
 	return (
-		<li
-			className={`relative group/item flex items-center gap-1 text-white break-all overflow-hidden text-ellipsis whitespace-nowrap rounded-md text-sm md:text-base cursor-pointer px-2 py-3 ${
-				false
+		<div
+			onClick={() => handleSelectChatId(id)}
+			className={`relative w-full group/item flex items-center gap-1 text-white break-all overflow-hidden text-ellipsis whitespace-nowrap rounded-md text-sm md:text-base cursor-pointer px-2 py-3 ${
+				selectedId === id
 					? "bg-lighter-gray hover:bg-lighter-gray"
 					: "bg-transparent hover:bg-lighter-gray"
 			}`}
@@ -49,7 +56,7 @@ const ListItem = ({ id, title }) => {
 				{enableEdit ? (
 					<input
 						onChange={(e) => setValue(e.target.value)}
-						onKeyDown={(e) => handleEnterKeyPress(e)}
+						onKeyDown={(e) => handleUpdateChatByEnterKeyPress(e)}
 						type="text"
 						name="item"
 						autoFocus
@@ -61,7 +68,9 @@ const ListItem = ({ id, title }) => {
 				)}
 			</div>
 			<div
-				className={`absolute z-40 top-0 right-0 invisible group-hover/item:visible flex gap-0.5 justify-end h-full ${
+				className={`absolute z-40 top-0 right-0 ${
+					selectedId === id ? "visible" : "invisible"
+				} group-hover/item:visible flex gap-0.5 justify-end h-full ${
 					false ? "w-16" : "w-20"
 				} bg-gradient-to-l from-lighter-gray from-65%`}
 			>
@@ -79,7 +88,7 @@ const ListItem = ({ id, title }) => {
 						<button onClick={() => setEnableEdit(true)}>
 							<EditIcon />
 						</button>
-						<button>
+						<button onClick={() => handleDeleteChat(id)}>
 							<TrashIcon />
 						</button>
 					</>
@@ -87,7 +96,7 @@ const ListItem = ({ id, title }) => {
 			</div>
 
 			<div className="absolute z-20 top-0 right-0 flex gap-0.5 justify-end h-full w-10 bg-gradient-to-l from-dark-secondary from-10%"></div>
-		</li>
+		</div>
 	);
 };
 
