@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* reset css */
+/* start reset css */
 * {
 	margin: 0;
 	padding: 0;
@@ -22,8 +22,16 @@
 ::-webkit-scrollbar-thumb:hover {
 	background: #555;
 }
-
 /* end scrollbar css */
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+	-webkit-box-shadow: 0 0 0 30px white inset !important;
+}
+
+/* end reset css */
 
 .chat-sidebar {
 	@apply fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-dark-secondary border-r sm:translate-x-0;
@@ -46,6 +54,10 @@
 }
 .conversation__content {
 	@apply relative flex-1 w-full p-4 flex flex-col items-center justify-center;
+}
+
+.auth-shadow {
+	box-shadow: 0px 40px 64px -30px rgba(20, 20, 20, 0.1);
 }
 
 /* CSS for the modal overlay */

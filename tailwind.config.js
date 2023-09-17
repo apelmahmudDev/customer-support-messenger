@@ -12,6 +12,7 @@ module.exports = {
 				["dark-primary"]: "#2C2C2C",
 				["dark-secondary"]: "#3E3E3E",
 				["lighter-gray"]: "#545454",
+				["auth-light"]: "#F6F3F2",
 				gray: "#898989",
 				purple: "#763CD4",
 				orange: "#ffcf4b",
