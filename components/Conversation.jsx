@@ -103,7 +103,7 @@ const Conversation = () => {
 					next={fetchMore}
 					inverse={true}
 					hasMore={hasMore}
-					loader={<ConversationLoader />}
+					loader={<ConversationLoader infinite />}
 					className="flex flex-col-reverse"
 					scrollableTarget="scrollableDiv"
 				>
