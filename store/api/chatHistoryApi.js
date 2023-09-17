@@ -13,30 +13,31 @@ export const chatHistoryApi = baseApi.injectEndpoints({
 			query: ({ conversationId, page }) =>
 				`/user/openai/chat/history/${conversationId}?page=${page}`,
 
-			async onQueryStarted({ conversationId }, { queryFulfilled, dispatch }) {
+			async onQueryStarted(
+				{ conversationId },
+				{ queryFulfilled, dispatch }
+			) {
 				try {
 					const result = await queryFulfilled;
 					const chat = result?.data?.response?.records?.data;
 
 					if (chat?.length > 0) {
 						dispatch(storeMessages(chat));
-
-						// update conversation cache pessimistically start
-
-						// dispatch(
+						// update conversation cache pessimistically
+						// const result = dispatch(
 						// 	baseApi.util.updateQueryData(
 						// 		"getChatHistory",
-						// 		email,
+						// 		conversationId,
 						// 		(draft) => {
+						// 			console.log("chat from updateQuery", chat);
 						// 			return {
-						// 				data: [...draft.data, ...conversations.data],
-						// 				totalCount: Number(draft.totalCount),
+						// 				...draft,
 						// 			};
 						// 		}
 						// 	)
 						// );
-
-						// update messages cache pessimistically end
+						// console.log("result", result);
+						// console.log("result dr", JSON.stringify(result));
 					}
 				} catch (err) {}
 			},
