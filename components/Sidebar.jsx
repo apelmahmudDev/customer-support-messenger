@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useGetChatConversationQuery } from "@/store/api/chatConversationApi";
-import { storeConversationId } from "@/store/slices/chatSlice";
+import { resetMessages, storeConversationId } from "@/store/slices/chatSlice";
 import InfiniteScroll from "react-infinite-scroll-component";
 import NewChatButton from "./NewChatButton";
 import Spinner from "./Spinner";
@@ -12,6 +12,7 @@ import { useDeleteChatMutation } from "@/store/api/chatDeleteApi";
 
 const Sidebar = () => {
 	const dispatch = useDispatch();
+	const { conversationId } = useSelector((state) => state.chat);
 	const [page, setPage] = useState(1);
 	const [hasMore, setHasMore] = useState(true);
 	const [chatHistory, setChatHistory] = useState([]);
@@ -56,6 +57,7 @@ const Sidebar = () => {
 
 	// All handlers are here
 	const handleSelectChatId = (id) => {
+		dispatch(resetMessages());
 		setSelectedId(id);
 		dispatch(storeConversationId(id));
 	};
@@ -69,10 +71,17 @@ const Sidebar = () => {
 	};
 
 	const handleNewChat = () => {
+		dispatch(resetMessages());
 		dispatch(storeConversationId(null));
 		dispatch(setOpenSidebar());
 		setSelectedId(null);
 	};
+
+	useEffect(() => {
+		if (!selectedId && conversationId) {
+			setSelectedId(conversationId);
+		}
+	}, [selectedId, conversationId]);
 
 	return (
 		<div>

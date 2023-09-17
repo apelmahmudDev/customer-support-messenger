@@ -17,19 +17,16 @@ export const chatStoreApi = baseApi.injectEndpoints({
 
 					if (conversations?.data) {
 						// update conversation cache pessimistically start
-						console.log("conversations", conversations);
-						const patchResult = dispatch(
-							baseApi.util.updateQueryData(
-								"getChatConversation",
-								undefined,
-								(draft) => {
-									draft.data = [...draft.data, ...conversations.data];
-									return draft;
-								}
-							)
-						);
-						console.log("draft", patchResult);
-
+						// const patchResult = dispatch(
+						// 	baseApi.util.updateQueryData(
+						// 		"getChatConversation",
+						// 		undefined,
+						// 		(draft) => {
+						// 			draft.data = [...draft.data, ...conversations.data];
+						// 			return draft;
+						// 		}
+						// 	)
+						// );
 						// update messages cache pessimistically end
 					}
 				} catch (err) {}

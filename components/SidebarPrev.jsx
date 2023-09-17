@@ -40,7 +40,6 @@ const Sidebar = () => {
 		});
 	};
 
-	// console.log("value", data);
 	const handleUpdateChat = () => {
 		updateChat({
 			chatId: selectedId,
@@ -60,12 +59,10 @@ const Sidebar = () => {
 	};
 
 	const handleSubmitUpdate = () => {
-		console.log("click");
 		// const updatedConversation = {
 		// 	chatId: selectedId,
 		// 	name: value,
 		// };
-		// console.log(updatedConversation);
 
 		handleUpdateChat();
 		setEnableEdit(false);
@@ -96,11 +93,7 @@ const Sidebar = () => {
 	}, [data?.data]);
 
 	useEffect(() => {
-		if (
-			!isLoading &&
-			!isFetching &&
-			data?.pagination?.next_page_url == null
-		) {
+		if (!isLoading && !isFetching && data?.pagination?.next_page_url == null) {
 			setHasMore(false);
 		}
 	}, [data?.data, isFetching, isLoading, hasMore]);
@@ -144,9 +137,7 @@ const Sidebar = () => {
 						<ul>
 							{conversation?.map((item) => (
 								<li
-									onClick={() =>
-										handleSelectConversation(item)
-									}
+									onClick={() => handleSelectConversation(item)}
 									key={item.id}
 									className={`relative flex items-center gap-1 text-white break-all overflow-hidden text-ellipsis whitespace-nowrap rounded-md text-sm md:text-base cursor-pointer px-2 py-3 ${
 										selectedId == item?.id
@@ -160,9 +151,7 @@ const Sidebar = () => {
 											type="text"
 											autoFocus
 											value={value}
-											onChange={(e) =>
-												setValue(e.target.value)
-											}
+											onChange={(e) => setValue(e.target.value)}
 											// onBlur={}
 										/>
 									) : (
@@ -183,37 +172,21 @@ const Sidebar = () => {
 										<div>
 											{enableEdit ? (
 												<div className="absolute z-40 top-0 right-0 flex gap-0.5 justify-end h-full w-16 bg-gradient-to-l from-lighter-gray from-65%">
-													<button
-														onClick={
-															handleSubmitUpdate
-														}
-													>
+													<button onClick={handleSubmitUpdate}>
 														<CheckIcon />
 													</button>
 													<button
-														onClick={() =>
-															setEnableEdit(
-																(prev) => !prev
-															)
-														}
+														onClick={() => setEnableEdit((prev) => !prev)}
 													>
 														<CloseIcon />
 													</button>
 												</div>
 											) : (
 												<div className="absolute z-40 top-0 right-0 flex gap-0.5 justify-end h-full w-16 bg-gradient-to-l from-lighter-gray from-65%">
-													<button
-														onClick={
-															handleEnableEdit
-														}
-													>
+													<button onClick={handleEnableEdit}>
 														<EditIcon />
 													</button>
-													<button
-														onClick={
-															handleDeleteChat
-														}
-													>
+													<button onClick={handleDeleteChat}>
 														<TrashIcon />
 													</button>
 												</div>

@@ -19,7 +19,7 @@ export const chatDeleteApi = baseApi.injectEndpoints({
 						}
 					)
 				);
-				console.log("draft", patchResult);
+
 				// try {
 				// 	await queryFulfilled;
 				// } catch (error) {

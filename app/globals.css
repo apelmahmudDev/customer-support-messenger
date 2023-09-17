@@ -44,6 +44,9 @@
 .chat-send-btn {
 	@apply absolute p-2 rounded-full right-2 disabled:bg-slate-400 text-black bottom-1.5 md:bottom-2 transition-colors disabled:opacity-40 bg-gradient-to-b from-[#ffcf4b] to-[#e60f83];
 }
+.conversation__content {
+	@apply relative flex-1 w-full p-4 flex flex-col items-center justify-center;
+}
 
 /* CSS for the modal overlay */
 .sidebar-overlay {

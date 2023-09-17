@@ -50,6 +50,7 @@ const AutoExpandingTextarea = () => {
 	};
 
 	// set conversationId after sending message
+	console.log("id", data?.id);
 	useEffect(() => {
 		if (isSuccess && data?.id) {
 			dispatch(storeConversationId(data?.id));
