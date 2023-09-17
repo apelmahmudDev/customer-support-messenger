@@ -37,6 +37,7 @@ const Conversation = () => {
 		setPage((prevPage) => prevPage + 1);
 	};
 
+	// fetch more messages when page changes
 	useEffect(() => {
 		if (page > 1) {
 			dispatch(
@@ -47,6 +48,13 @@ const Conversation = () => {
 			);
 		}
 	}, [page, dispatch, conversationId]);
+
+	// hasMore decide when to stop fetching
+	useEffect(() => {
+		if (data?.response?.records?.pagination?.total === messages?.length) {
+			setHasMore(false);
+		}
+	}, [messages?.length, data?.response?.records?.pagination?.total]);
 
 	// user interface decide what to render
 	let content = null;
@@ -72,7 +80,9 @@ const Conversation = () => {
 	) {
 		content = (
 			<div className="conversation__content">
-				<p className="text-gray-500">No data?.response?.records?.data yet!</p>
+				<p className="text-gray-500">
+					No data?.response?.records?.data yet!
+				</p>
 			</div>
 		);
 	}
@@ -102,8 +112,12 @@ const Conversation = () => {
 						.sort((a, b) => b.id - a.id)
 						.map((chat) => (
 							<div key={chat?.id}>
-								{chat?.user_message && <UserMessage chat={chat} />}
-								{chat?.bot_message && <BotMessage chat={chat} />}
+								{chat?.user_message && (
+									<UserMessage chat={chat} />
+								)}
+								{chat?.bot_message && (
+									<BotMessage chat={chat} />
+								)}
 							</div>
 						))}
 				</InfiniteScroll>
