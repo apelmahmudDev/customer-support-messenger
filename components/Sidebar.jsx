@@ -1,14 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useGetChatConversationQuery } from "@/store/api/chatConversationApi";
 import { resetMessages, storeConversationId } from "@/store/slices/chatSlice";
 import InfiniteScroll from "react-infinite-scroll-component";
 import NewChatButton from "./NewChatButton";
 import Spinner from "./Spinner";
 import ListItem from "./ListItem";
 import { setOpenSidebar } from "@/store/slices/uiSlice";
-import { useDeleteChatMutation } from "@/store/api/chatDeleteApi";
+import {
+	useDeleteChatMutation,
+	useGetMoreChatConversationQuery,
+} from "@/store/api/chatApi";
 
 const Sidebar = () => {
 	const dispatch = useDispatch();
@@ -21,27 +23,27 @@ const Sidebar = () => {
 	const [deleteChat] = useDeleteChatMutation();
 
 	const { data, isLoading, isFetching, isSuccess } =
-		useGetChatConversationQuery({
-			page: page,
-		});
+		useGetMoreChatConversationQuery(page);
 
 	useEffect(() => {
 		if (isSuccess) {
-			setChatHistory(data?.data);
+			setChatHistory(data?.response?.records?.data);
 		}
-	}, [isSuccess, data?.data]);
+	}, [isSuccess, data?.response?.records?.data]);
 
 	useEffect(() => {
 		if (page > 1 && isSuccess) {
-			const uniqueMessages = data?.data?.filter(
+			const uniqueMessages = data?.response?.records?.data?.filter(
 				(item) => !chatHistory?.some((item2) => item?.id === item2?.id)
 			);
 			setChatHistory((prev) => [...prev, ...uniqueMessages]);
 		}
-	}, [page, isSuccess, data?.data, chatHistory]);
+	}, [page, isSuccess, data?.response?.records?.data, chatHistory]);
 
 	const handleFetChatHistory = () => {
-		if (chatHistory?.length < data?.pagination?.total) {
+		if (
+			chatHistory?.length < data?.response?.records?.data?.pagination?.total
+		) {
 			setHasMore(true);
 			setPage(page + 1);
 		} else {
@@ -50,10 +52,12 @@ const Sidebar = () => {
 	};
 
 	useEffect(() => {
-		if (data?.pagination?.total === chatHistory?.length) {
+		if (
+			data?.response?.records?.data?.pagination?.total === chatHistory?.length
+		) {
 			setHasMore(false);
 		}
-	}, [chatHistory, data?.pagination?.total]);
+	}, [chatHistory, data?.response?.records?.data]);
 
 	// All handlers are here
 	const handleSelectChatId = (id) => {
@@ -86,7 +90,7 @@ const Sidebar = () => {
 	return (
 		<div>
 			<div
-				onClick={handleSidebar}
+				// onClick={handleSidebar}
 				className={`${
 					openSidebar ? "sidebar-overlay" : "hidden"
 				} block sm:hidden`}

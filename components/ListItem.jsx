@@ -5,7 +5,7 @@ import CloseIcon from "./CloseIcon";
 import CheckIcon from "./CheckIcon";
 import TrashIcon from "./TrashIcon";
 import MessageIcon from "./MessageIcon";
-import { useUpdateChatMutation } from "@/store/api/chatUpdateApi";
+import { useUpdateChatMutation } from "@/store/api/chatApi";
 
 const ListItem = ({
 	id,

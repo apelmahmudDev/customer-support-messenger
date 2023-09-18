@@ -3,8 +3,8 @@ import SendIcon from "./SendIcon";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useAutoSizeTextArea from "@/hook/useAutoSizeTextArea";
-import { useStoreChatMutation } from "@/store/api/chatStoreApi";
 import { storeConversationId } from "@/store/slices/chatSlice";
+import { useAddChatMutation } from "@/store/api/chatApi";
 
 const AutoExpandingTextarea = () => {
 	const dispatch = useDispatch();
@@ -13,7 +13,7 @@ const AutoExpandingTextarea = () => {
 	const [value, setValue] = useState("");
 	const textAreaRef = useRef(null);
 
-	const [storeChat, { data, isSuccess }] = useStoreChatMutation();
+	const [addChat, { data, isSuccess }] = useAddChatMutation();
 
 	useAutoSizeTextArea(textAreaRef.current, value);
 
@@ -31,7 +31,7 @@ const AutoExpandingTextarea = () => {
 
 	const handleSubmitUserValue = (e) => {
 		e.preventDefault();
-		storeChat({
+		addChat({
 			promt: value,
 			chatId: conversationId,
 		});
@@ -41,7 +41,7 @@ const AutoExpandingTextarea = () => {
 	const handleKeyPress = (e) => {
 		if (value.length && e.key === "Enter" && !e.shiftKey) {
 			e.preventDefault();
-			storeChat({
+			addChat({
 				promt: value,
 				chatId: conversationId,
 			});
@@ -50,12 +50,11 @@ const AutoExpandingTextarea = () => {
 	};
 
 	// set conversationId after sending message
-	console.log("id", data?.id);
 	useEffect(() => {
-		if (isSuccess && data?.id) {
-			dispatch(storeConversationId(data?.id));
+		if (isSuccess && data?.response?.records?.id) {
+			dispatch(storeConversationId(data?.response?.records?.id));
 		}
-	}, [isSuccess, data?.id, dispatch]);
+	}, [isSuccess, data?.response?.records?.id, dispatch]);
 
 	return (
 		<form onSubmit={handleSubmitUserValue} className="w-full">

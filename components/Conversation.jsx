@@ -2,14 +2,11 @@
 import { useRef, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import InfiniteScroll from "react-infinite-scroll-component";
-import {
-	chatHistoryApi,
-	useGetChatHistoryQuery,
-} from "@/store/api/chatHistoryApi";
 import ConversationLoader from "./ConversationLoader";
 import UserMessage from "./UserMessage";
 import BotMessage from "./BotMessage";
 import { storeMessages } from "@/store/slices/chatSlice";
+import { chatApi, useGetChatHistoryQuery } from "@/store/api/chatApi";
 
 const Conversation = () => {
 	const { messages, conversationId } = useSelector((state) => state.chat);
@@ -41,7 +38,7 @@ const Conversation = () => {
 	useEffect(() => {
 		if (page > 1) {
 			dispatch(
-				chatHistoryApi.endpoints.getMoreChatHistory.initiate({
+				chatApi.endpoints.getMoreChatHistory.initiate({
 					conversationId,
 					page,
 				})
@@ -80,9 +77,7 @@ const Conversation = () => {
 	) {
 		content = (
 			<div className="conversation__content">
-				<p className="text-gray-500">
-					No data?.response?.records?.data yet!
-				</p>
+				<p className="text-gray-500">No data?.response?.records?.data yet!</p>
 			</div>
 		);
 	}
@@ -112,12 +107,8 @@ const Conversation = () => {
 						.sort((a, b) => b.id - a.id)
 						.map((chat) => (
 							<div key={chat?.id}>
-								{chat?.user_message && (
-									<UserMessage chat={chat} />
-								)}
-								{chat?.bot_message && (
-									<BotMessage chat={chat} />
-								)}
+								{chat?.user_message && <UserMessage chat={chat} />}
+								{chat?.bot_message && <BotMessage chat={chat} />}
 							</div>
 						))}
 				</InfiniteScroll>
