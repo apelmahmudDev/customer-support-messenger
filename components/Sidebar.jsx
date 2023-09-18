@@ -11,6 +11,7 @@ import {
 	useDeleteChatMutation,
 	useGetMoreChatConversationQuery,
 } from "@/store/api/chatApi";
+import Dialog from "./Dialog";
 
 const Sidebar = () => {
 	const dispatch = useDispatch();
@@ -19,6 +20,9 @@ const Sidebar = () => {
 	const [hasMore, setHasMore] = useState(true);
 	const [chatHistory, setChatHistory] = useState([]);
 	const [selectedId, setSelectedId] = useState(null);
+	const [openDialog, setOpenDialog] = useState(false);
+	const [isDelete, setIsDelete] = useState(false);
+	const [deleteId, setDeleteId] = useState(null);
 	const { openSidebar } = useSelector((state) => state.ui);
 	const [deleteChat] = useDeleteChatMutation();
 
@@ -61,14 +65,31 @@ const Sidebar = () => {
 		}
 	}, [chatHistory, data?.response?.records?.data]);
 
-	// All handlers are here
+	// delete chat after confirmation
+	useEffect(() => {
+		if (isDelete) {
+			deleteChat({ chatId: deleteId });
+			setIsDelete(false);
+			setDeleteId(null);
+			setOpenDialog(false);
+		}
+	}, [isDelete]);
+
+	// all handlers are here
 	const handleSelectChatId = (id) => {
 		setSelectedId(id);
 		dispatch(storeConversationId(id));
 	};
 
 	const handleDeleteChat = (id) => {
-		deleteChat({ chatId: id });
+		// open dialog for confirmation
+		setDeleteId(id);
+		setOpenDialog(true);
+	};
+
+	const handleCancel = () => {
+		setOpenDialog(false);
+		setDeleteId(null);
 	};
 
 	const handleSidebar = () => {
@@ -96,7 +117,9 @@ const Sidebar = () => {
 					openSidebar ? "sidebar-overlay" : "hidden"
 				} block sm:hidden`}
 			></div>
-
+			{openDialog && (
+				<Dialog handleCancel={handleCancel} setIsDelete={setIsDelete} />
+			)}
 			<div
 				id="chat-sidebar"
 				className={`absolute top-0 left-0 h-full z-40 w-64 pt-4 transition-transform bg-dark-secondary -translate-x-full sm:translate-x-0 ${
