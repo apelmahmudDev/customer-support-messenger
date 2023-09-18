@@ -3,8 +3,12 @@ import SendIcon from "./SendIcon";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useAutoSizeTextArea from "@/hook/useAutoSizeTextArea";
-import { storeConversationId } from "@/store/slices/chatSlice";
+import {
+	storeConversationId,
+	storeTempMessage,
+} from "@/store/slices/chatSlice";
 import { useAddChatMutation } from "@/store/api/chatApi";
+import { setBotTyping } from "@/store/slices/uiSlice";
 
 const AutoExpandingTextarea = () => {
 	const dispatch = useDispatch();
@@ -31,6 +35,14 @@ const AutoExpandingTextarea = () => {
 
 	const handleSubmitUserValue = (e) => {
 		e.preventDefault();
+		dispatch(setBotTyping(true));
+		dispatch(
+			storeTempMessage({
+				user_message: value,
+				id: Date.now().toString(),
+				isTemp: true,
+			})
+		);
 		addChat({
 			promt: value,
 			chatId: conversationId,
@@ -41,6 +53,14 @@ const AutoExpandingTextarea = () => {
 	const handleKeyPress = (e) => {
 		if (value.length && e.key === "Enter" && !e.shiftKey) {
 			e.preventDefault();
+			dispatch(setBotTyping(true));
+			dispatch(
+				storeTempMessage({
+					user_message: value,
+					id: Date.now().toString(),
+					isTemp: true,
+				})
+			);
 			addChat({
 				promt: value,
 				chatId: conversationId,

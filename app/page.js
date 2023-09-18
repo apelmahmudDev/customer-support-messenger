@@ -1,6 +1,5 @@
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
-import { BotTyping } from "@/components/BotTyping";
 import Conversation from "@/components/Conversation";
 import AutoExpandingTextarea from "@/components/AutoExpandingTextarea";
 
@@ -17,7 +16,6 @@ export default function Home() {
 				<main className="h-full flex flex-col overflow-hidden sm:ml-64">
 					<Conversation />
 					<div className="p-4 mx-auto w-full max-w-screen-lg">
-						<BotTyping />
 						<AutoExpandingTextarea />
 					</div>
 				</main>
