@@ -24,7 +24,7 @@ const Sidebar = () => {
 	const [isDelete, setIsDelete] = useState(false);
 	const [deleteId, setDeleteId] = useState(null);
 	const { openSidebar } = useSelector((state) => state.ui);
-	const [deleteChat] = useDeleteChatMutation();
+	const [deleteChat, { isLoading: isDeleting }] = useDeleteChatMutation();
 
 	const { data, isLoading, isFetching, isSuccess } =
 		useGetMoreChatConversationQuery(page);
@@ -149,6 +149,7 @@ const Sidebar = () => {
 									key={item?.id}
 									id={item?.id}
 									title={item?.title}
+									isDeleting={isDeleting}
 									selectedId={selectedId}
 									handleDeleteChat={handleDeleteChat}
 									handleSelectChatId={handleSelectChatId}

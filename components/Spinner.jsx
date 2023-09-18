@@ -1,9 +1,10 @@
-const Spinner = () => {
+const Spinner = ({ small }) => {
 	return (
 		<svg
-			width="24"
-			height="24"
+			width={small ? "22" : "24"}
+			height={small ? "22" : "24"}
 			viewBox="0 0  24 24"
+			className={`${small ? "pr-1 mb-1" : ""}`}
 			xmlns="http://www.w3.org/2000/svg"
 		>
 			<g className="spinner_Wezc">

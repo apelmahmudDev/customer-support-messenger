@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Spinner from "./Spinner";
 import EditIcon from "./EditIcon";
 import CloseIcon from "./CloseIcon";
 import CheckIcon from "./CheckIcon";
@@ -12,6 +13,7 @@ const ListItem = ({
 	title,
 	handleSelectChatId,
 	selectedId,
+	isDeleting,
 	handleDeleteChat,
 }) => {
 	const [enableEdit, setEnableEdit] = useState(false);
@@ -46,6 +48,8 @@ const ListItem = ({
 		<div
 			onClick={() => handleSelectChatId(id)}
 			className={`relative w-full group/item flex items-center gap-1 text-white break-all overflow-hidden text-ellipsis whitespace-nowrap rounded-md text-sm md:text-base cursor-pointer px-2 py-3 ${
+				isDeleting ? "pointer-events-none" : "pointer-events-auto"
+			} ${
 				selectedId === id
 					? "bg-lighter-gray hover:bg-lighter-gray"
 					: "bg-transparent hover:bg-lighter-gray"
@@ -89,7 +93,11 @@ const ListItem = ({
 							<EditIcon />
 						</button>
 						<button onClick={() => handleDeleteChat(id)}>
-							<TrashIcon />
+							{isDeleting && selectedId === id ? (
+								<Spinner small />
+							) : (
+								<TrashIcon />
+							)}
 						</button>
 					</>
 				)}
