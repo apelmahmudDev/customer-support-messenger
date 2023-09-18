@@ -42,7 +42,8 @@ const Sidebar = () => {
 
 	const handleFetChatHistory = () => {
 		if (
-			chatHistory?.length < data?.response?.records?.data?.pagination?.total
+			chatHistory?.length <
+			data?.response?.records?.data?.pagination?.total
 		) {
 			setHasMore(true);
 			setPage(page + 1);
@@ -53,7 +54,8 @@ const Sidebar = () => {
 
 	useEffect(() => {
 		if (
-			data?.response?.records?.data?.pagination?.total === chatHistory?.length
+			data?.response?.records?.data?.pagination?.total ===
+			chatHistory?.length
 		) {
 			setHasMore(false);
 		}
@@ -90,7 +92,7 @@ const Sidebar = () => {
 	return (
 		<div>
 			<div
-				// onClick={handleSidebar}
+				onClick={handleSidebar}
 				className={`${
 					openSidebar ? "sidebar-overlay" : "hidden"
 				} block sm:hidden`}

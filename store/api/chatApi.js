@@ -1,3 +1,5 @@
+import { removeLastTempMessage } from "../slices/chatSlice";
+import { setBotTyping } from "../slices/uiSlice";
 import { apiSlice } from "./apiSlice";
 
 export const chatApi = apiSlice.injectEndpoints({
@@ -14,12 +16,25 @@ export const chatApi = apiSlice.injectEndpoints({
 		getChatHistory: builder.query({
 			query: ({ conversationId }) =>
 				`/user/openai/chat/history/${conversationId}?page=1`,
+			async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+				try {
+					await queryFulfilled;
+					dispatch(removeLastTempMessage());
+					dispatch(setBotTyping(false));
+				} catch (error) {
+					dispatch(setBotTyping(false));
+					// do nothing
+				}
+			},
 			providesTags: ["Chat"],
 		}),
 		getMoreChatHistory: builder.query({
 			query: ({ conversationId, page }) =>
 				`/user/openai/chat/history/${conversationId}?page=${page}`,
-			async onQueryStarted({ conversationId }, { queryFulfilled, dispatch }) {
+			async onQueryStarted(
+				{ conversationId },
+				{ queryFulfilled, dispatch }
+			) {
 				try {
 					const result = await queryFulfilled;
 					const chat = result?.data?.response?.records?.data;

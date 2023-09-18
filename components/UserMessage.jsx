@@ -10,11 +10,13 @@ const UserMessage = ({ chat }) => {
 						{chat?.user_message}
 					</p>
 				</div>
-				<div className="flex justify-end">
-					<p className="text-xs text-gray mt-1 font-medium break-all">
-						{formatTimeAgo(chat?.created_at)}
-					</p>
-				</div>
+				{!chat?.isTemp && (
+					<div className="flex justify-end">
+						<p className="text-xs text-gray mt-1 font-medium break-all">
+							{formatTimeAgo(chat?.created_at)}
+						</p>
+					</div>
+				)}
 			</div>
 			<Image
 				className="shrink-0 w-8 h-8 rounded-full"

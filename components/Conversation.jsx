@@ -2,14 +2,16 @@
 import { useRef, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import InfiniteScroll from "react-infinite-scroll-component";
-import ConversationLoader from "./ConversationLoader";
+import { BotTyping } from "./BotTyping";
 import UserMessage from "./UserMessage";
 import BotMessage from "./BotMessage";
+import ConversationLoader from "./ConversationLoader";
 import { storeMessages } from "@/store/slices/chatSlice";
 import { chatApi, useGetChatHistoryQuery } from "@/store/api/chatApi";
 
 const Conversation = () => {
 	const { messages, conversationId } = useSelector((state) => state.chat);
+	const { isBotTyping } = useSelector((state) => state.ui);
 	const [page, setPage] = useState(1);
 	const [hasMore, setHasMore] = useState(true);
 	const dispatch = useDispatch();
@@ -77,7 +79,9 @@ const Conversation = () => {
 	) {
 		content = (
 			<div className="conversation__content">
-				<p className="text-gray-500">No data?.response?.records?.data yet!</p>
+				<p className="text-gray-500">
+					No data?.response?.records?.data yet!
+				</p>
 			</div>
 		);
 	}
@@ -88,31 +92,38 @@ const Conversation = () => {
 		data?.response?.records?.data?.length > 0
 	) {
 		content = (
-			<div
-				ref={timelineRef}
-				id="scrollableDiv"
-				className="relative flex-1 overflow-y-auto mx-auto w-full p-4 flex flex-col-reverse"
-			>
-				<InfiniteScroll
-					dataLength={messages?.length}
-					next={fetchMore}
-					inverse={true}
-					hasMore={hasMore}
-					loader={<ConversationLoader infinite />}
-					className="flex flex-col-reverse"
-					scrollableTarget="scrollableDiv"
+			<>
+				<div
+					ref={timelineRef}
+					id="scrollableDiv"
+					className="relative flex-1 overflow-y-auto mx-auto w-full p-4 flex flex-col-reverse"
 				>
-					{messages
-						.slice()
-						.sort((a, b) => b.id - a.id)
-						.map((chat) => (
-							<div key={chat?.id}>
-								{chat?.user_message && <UserMessage chat={chat} />}
-								{chat?.bot_message && <BotMessage chat={chat} />}
-							</div>
-						))}
-				</InfiniteScroll>
-			</div>
+					<InfiniteScroll
+						dataLength={messages?.length}
+						next={fetchMore}
+						inverse={true}
+						hasMore={hasMore}
+						loader={<ConversationLoader infinite />}
+						className="flex flex-col-reverse"
+						scrollableTarget="scrollableDiv"
+					>
+						{messages
+							.slice()
+							.sort((a, b) => b.id - a.id)
+							.map((chat) => (
+								<div key={chat?.id}>
+									{chat?.user_message && (
+										<UserMessage chat={chat} />
+									)}
+									{chat?.bot_message && (
+										<BotMessage chat={chat} />
+									)}
+								</div>
+							))}
+					</InfiniteScroll>
+				</div>
+				<div className="p-4">{isBotTyping && <BotTyping />}</div>
+			</>
 		);
 	}
 
