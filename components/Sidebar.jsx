@@ -63,7 +63,6 @@ const Sidebar = () => {
 
 	// All handlers are here
 	const handleSelectChatId = (id) => {
-		dispatch(resetMessages());
 		setSelectedId(id);
 		dispatch(storeConversationId(id));
 	};

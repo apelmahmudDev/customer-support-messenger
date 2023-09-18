@@ -19,7 +19,8 @@ const Conversation = () => {
 
 	// fetch messages when conversationId changes
 	const { data, isSuccess, isLoading, isFetching, isError, error } =
-		useGetChatHistoryQuery({ conversationId }) || {};
+		useGetChatHistoryQuery({ conversationId }, { skip: !conversationId }) ||
+		{};
 
 	// initial store messages when conversationId changes
 	useEffect(() => {
@@ -57,6 +58,32 @@ const Conversation = () => {
 
 	// user interface decide what to render
 	let content = null;
+	if (!conversationId) {
+		content = (
+			<div className="conversation__content">
+				<p className="text-gray-500">Select a conversation</p>
+			</div>
+		);
+	}
+	if (!conversationId && messages?.length > 0) {
+		content = (
+			<>
+				<div className="flex-1 overflow-y-auto mx-auto w-full p-4 flex flex-col-reverse">
+					{messages
+						.slice()
+						.sort((a, b) => b.id - a.id)
+						.map((chat) => (
+							<div key={chat?.id}>
+								{chat?.user_message && (
+									<UserMessage chat={chat} />
+								)}
+							</div>
+						))}
+				</div>
+				<div className="p-4">{isBotTyping && <BotTyping />}</div>
+			</>
+		);
+	}
 	if (isLoading) {
 		content = (
 			<div className="conversation__content">
@@ -67,7 +94,7 @@ const Conversation = () => {
 	if (!isLoading && isError) {
 		content = (
 			<div className="conversation__content">
-				<p className="text-gray-500">No messages yet!</p>
+				<p className="text-gray-500">Select a conversation</p>
 			</div>
 		);
 	}
@@ -79,9 +106,7 @@ const Conversation = () => {
 	) {
 		content = (
 			<div className="conversation__content">
-				<p className="text-gray-500">
-					No data?.response?.records?.data yet!
-				</p>
+				<p className="text-gray-500">No messages yet!</p>
 			</div>
 		);
 	}
