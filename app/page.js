@@ -15,7 +15,7 @@ export default function Home() {
 				</aside>
 				<main className="h-full flex flex-col overflow-hidden sm:ml-64">
 					<Conversation />
-					<div className="p-4 mx-auto w-full max-w-screen-lg">
+					<div className="p-4 pt-0 mx-auto w-full max-w-screen-lg">
 						<AutoExpandingTextarea />
 					</div>
 				</main>
