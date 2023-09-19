@@ -13,6 +13,7 @@ import { setBotTyping } from "@/store/slices/uiSlice";
 const AutoExpandingTextarea = () => {
 	const dispatch = useDispatch();
 	const { conversationId } = useSelector((state) => state.chat);
+	const { isBotTyping } = useSelector((state) => state.ui);
 	const [isDisabled, setIsDisabled] = useState(true);
 	const [value, setValue] = useState("");
 	const textAreaRef = useRef(null);
@@ -91,7 +92,10 @@ const AutoExpandingTextarea = () => {
 					style={{ maxHeight: "200px" }}
 					autoFocus
 				/>
-				<button className="chat-send-btn" disabled={isDisabled}>
+				<button
+					className="chat-send-btn"
+					disabled={isDisabled || isBotTyping}
+				>
 					<span className="text-primary-dark" data-state="closed">
 						<SendIcon />
 					</span>
