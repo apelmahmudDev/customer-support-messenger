@@ -24,7 +24,7 @@ export const testApi = apiSlice.injectEndpoints({
 							"getChatMessage",
 							undefined,
 							(draft) => {
-								console.log("draft", JSON.stringify(draft));
+								// console.log("draft", JSON.stringify(draft));
 								draft.data.push(...result?.data);
 							}
 						)

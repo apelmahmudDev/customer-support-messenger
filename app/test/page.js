@@ -1,19 +1,16 @@
 "use client";
 
-import { chatApi } from "@/store/api/chatApi";
-import { useGetPostQuery } from "@/store/api/testApi";
 import { useState, useEffect } from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
 import { useDispatch } from "react-redux";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { testApi, useGetChatMessageQuery } from "@/store/api/testApi";
 
 export default function Test() {
 	const dispatch = useDispatch();
-	const { data, error, isLoading } = useGetPostQuery();
-	const [page, setPage] = useState(1);
+	const { data: messages, error, isLoading } = useGetChatMessageQuery();
 	const [hasMore, setHasMore] = useState(true);
-	const dataLength = 100;
-
-	// console.log(data?.length);
+	const [page, setPage] = useState(1);
+	const dataLength = 40;
 
 	const fetchMore = () => {
 		console.log("fetchMore");
@@ -22,35 +19,37 @@ export default function Test() {
 
 	useEffect(() => {
 		if (page > 1) {
-			dispatch(chatApi.endpoints.getMorePost.initiate({ page }));
+			dispatch(testApi.endpoints.getChatMoreMessage.initiate({ page }));
 		}
 	}, [page, dispatch]);
 
 	useEffect(() => {
-		if (data?.length === dataLength) {
+		if (messages?.data === dataLength) {
 			setHasMore(false);
 		}
-	}, [data]);
+	}, [messages?.data]);
 
 	return (
 		<div className="max-w-xl p-5">
+			<div>{messages?.data?.length}</div>
 			{isLoading && <div>Loading...</div>}
 			{error && <div>Error: {error}</div>}
 			<div className="h-[500px] overflow-y-auto" id="scrollableDiv">
-				{!isLoading && data?.length && (
+				{!isLoading && messages?.data?.length && (
 					<InfiniteScroll
-						dataLength={data?.length}
+						dataLength={messages?.data?.length}
 						next={fetchMore}
 						hasMore={hasMore}
 						loader={<h4>Loading...</h4>}
 						scrollableTarget="scrollableDiv"
 					>
-						{data?.map((item) => (
+						{messages?.data?.map((message) => (
 							<div
-								key={item.id}
+								key={message.id}
 								className="border p-3 my-2 rounded "
 							>
-								{item.title}
+								<p>Bot:{message.bot_message}</p>
+								<p>User:{message.user_message}</p>
 							</div>
 						))}
 					</InfiniteScroll>
