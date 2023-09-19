@@ -4,6 +4,7 @@ const initialState = {
 	conversationId: null,
 	tempMessageId: null,
 	messages: [],
+	conversation: [],
 };
 
 export const chatSlice = createSlice({
@@ -38,6 +39,10 @@ export const chatSlice = createSlice({
 		storeConversationId: (state, action) => {
 			state.conversationId = action.payload;
 		},
+		// conversation
+		storeConversation: (state, action) => {
+			state.conversation = [...state.conversation, ...action.payload];
+		},
 	},
 });
 
@@ -47,5 +52,6 @@ export const {
 	resetMessages,
 	storeConversationId,
 	removeLastTempMessage,
+	storeConversation,
 } = chatSlice.actions;
 export default chatSlice.reducer;
