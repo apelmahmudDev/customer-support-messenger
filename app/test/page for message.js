@@ -3,21 +3,18 @@
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { testApi, useGetConversationQuery } from "@/store/api/testApi";
+import { testApi, useGetChatMessageQuery } from "@/store/api/testApi";
 const conversationId = 52;
 export default function Test() {
 	const dispatch = useDispatch();
+	const {
+		data: messages,
+		error,
+		isLoading,
+	} = useGetChatMessageQuery(conversationId);
 	const [hasMore, setHasMore] = useState(true);
 	const [page, setPage] = useState(1);
-	const dataLength = 24;
-
-	const {
-		data: conversation,
-		isLoading,
-		isSuccess,
-		isError,
-		error,
-	} = useGetConversationQuery();
+	const dataLength = 40;
 
 	const fetchMore = () => {
 		console.log("fetchMore");
@@ -26,36 +23,42 @@ export default function Test() {
 
 	useEffect(() => {
 		if (page > 1) {
-			dispatch(testApi.endpoints.getMoreConversation.initiate(page));
+			dispatch(
+				testApi.endpoints.getChatMoreMessage.initiate({
+					page,
+					conversationId,
+				})
+			);
 		}
 	}, [page, dispatch]);
 
 	useEffect(() => {
-		if (conversation?.data === dataLength) {
+		if (messages?.data === dataLength) {
 			setHasMore(false);
 		}
-	}, [conversation?.data]);
+	}, [messages?.data]);
 
 	return (
 		<div className="max-w-xl p-5">
-			<div>{conversation?.data?.length}</div>
+			<div>{messages?.data?.length}</div>
 			{isLoading && <div>Loading...</div>}
 			{error && <div>Error: {error}</div>}
 			<div className="h-[500px] overflow-y-auto" id="scrollableDiv">
-				{!isLoading && conversation?.data?.length && (
+				{!isLoading && messages?.data?.length && (
 					<InfiniteScroll
-						dataLength={conversation?.data?.length}
+						dataLength={messages?.data?.length}
 						next={fetchMore}
 						hasMore={hasMore}
 						loader={<h4>Loading...</h4>}
 						scrollableTarget="scrollableDiv"
 					>
-						{conversation?.data?.map((c) => (
+						{messages?.data?.map((message) => (
 							<div
-								key={c?.id}
+								key={message.id}
 								className="border p-3 my-2 rounded "
 							>
-								<p>User:{c?.title}</p>
+								<p>Bot:{message.bot_message}</p>
+								<p>User:{message.user_message}</p>
 							</div>
 						))}
 					</InfiniteScroll>

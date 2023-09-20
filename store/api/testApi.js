@@ -23,6 +23,7 @@ export const testApi = apiSlice.injectEndpoints({
 			},
 			providesTags: ["Chat"],
 		}),
+
 		getChatMoreMessage: builder.query({
 			query: ({ page, conversationId }) =>
 				`/user/openai/chat/history/${conversationId}?page=${page}`,
@@ -47,8 +48,43 @@ export const testApi = apiSlice.injectEndpoints({
 				} catch (error) {}
 			},
 		}),
+
+		getConversation: builder.query({
+			query: () => `/user/openai/chat/conversation?page=1`,
+			transformResponse: (response) => {
+				return {
+					data: response?.response?.records?.data,
+					pagination: response?.response?.records?.pagination,
+				};
+			},
+		}),
+
+		getMoreConversation: builder.query({
+			query: (page) => `/user/openai/chat/conversation?page=${page}`,
+			transformResponse: (response) => response?.response?.records?.data,
+
+			async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+				try {
+					const result = await queryFulfilled;
+					dispatch(
+						apiSlice.util.updateQueryData(
+							"getConversation",
+							undefined,
+							(draft) => {
+								console.log("draft", JSON.stringify(draft));
+								draft.data.push(...result?.data);
+							}
+						)
+					);
+				} catch (error) {}
+			},
+		}),
 	}),
 	overrideExisting: true,
 });
 
-export const { useGetChatMessageQuery, useGetChatMoreMessageQuery } = testApi;
+export const {
+	useGetChatMessageQuery,
+	useGetChatMoreMessageQuery,
+	useGetConversationQuery,
+} = testApi;
