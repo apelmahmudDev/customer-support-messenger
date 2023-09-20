@@ -20,7 +20,6 @@ const Sidebar = () => {
 	const [hasMore, setHasMore] = useState(true);
 	const [deleteId, setDeleteId] = useState(null);
 	const [isDelete, setIsDelete] = useState(false);
-	const [deleteCount, setDeleteCount] = useState(0);
 	const [selectedId, setSelectedId] = useState(null);
 	const [openDialog, setOpenDialog] = useState(false);
 
@@ -38,11 +37,6 @@ const Sidebar = () => {
 		setPage((prevPage) => prevPage + 1);
 	};
 
-	// console.log('pagination total', conversation?.pagination);
-	console.log('pagination total', conversation?.pagination?.total);
-	console.log('conversation',conversation?.data?.length);
-	// console.log('delete count', deleteCount)
-	console.log('hasMore',hasMore);
 
 	useEffect(() => {
 		if(
@@ -51,7 +45,7 @@ const Sidebar = () => {
 		) {
 			setHasMore(false);
 		}
-	}, [conversation?.data?.length, conversation?.pagination?.total, deleteCount, isLoading]);
+	}, [conversation?.data?.length, conversation?.pagination?.total, isLoading]);
 
 	// decide what to fetch more conversation end
 
@@ -59,7 +53,6 @@ const Sidebar = () => {
 	useEffect(() => {
 		if (isDelete) {
 			deleteChat({ chatId: deleteId });
-			// setDeleteCount((prevCount) => prevCount + 1);
 			setIsDelete(false);
 			setDeleteId(null);
 			setOpenDialog(false);
@@ -114,15 +107,19 @@ const Sidebar = () => {
 		);
 	}
 
-	if (isError) {
-		render = (
-			<div className="center__hw">
-				<button onClick={() => refetch()}>
-					<RetryIcon />
-				</button>
-			</div>
-		);
+	if (!isLoading && isError) {
+		render = ""
 	}
+
+	// if (isError) {
+	// 	render = (
+	// 		<div className="center__hw">
+	// 			<button onClick={() => refetch()}>
+	// 				<RetryIcon />
+	// 			</button>
+	// 		</div>
+	// 	);
+	// }
 
 	if (isSuccess) {
 		render = (
