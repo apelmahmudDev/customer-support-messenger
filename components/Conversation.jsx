@@ -18,7 +18,6 @@ const Conversation = () => {
 	const dispatch = useDispatch();
 	const timelineRef = useRef();
 
-	// test start
 	const {
 		data: messages,
 		errors,

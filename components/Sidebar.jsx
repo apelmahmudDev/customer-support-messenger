@@ -1,76 +1,54 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { resetMessages, storeConversationId } from "@/store/slices/chatSlice";
-import InfiniteScroll from "react-infinite-scroll-component";
-import NewChatButton from "./NewChatButton";
 import Spinner from "./Spinner";
-import ListItem from "./ListItem";
-import { setOpenSidebar } from "@/store/slices/uiSlice";
-import {
-	useDeleteChatMutation,
-	useGetMoreChatConversationQuery,
-} from "@/store/api/chatApi";
 import Dialog from "./Dialog";
+import ListItem from "./ListItem";
+import RetryIcon from "./RetryIcon";
+import NewChatButton from "./NewChatButton";
+import { useDispatch, useSelector } from "react-redux";
+import { setOpenSidebar } from "@/store/slices/uiSlice";
+import { useDeleteChatMutation } from "@/store/api/chatApi";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { testApi, useGetConversationQuery } from "@/store/api/testApi";
+import { resetMessages, storeConversationId } from "@/store/slices/chatSlice";
 
 const Sidebar = () => {
 	const dispatch = useDispatch();
+	const { openSidebar } = useSelector((state) => state.ui);
 	const { conversationId } = useSelector((state) => state.chat);
+
 	const [page, setPage] = useState(1);
 	const [hasMore, setHasMore] = useState(true);
-	const [chatHistory, setChatHistory] = useState([]);
+	const [deleteId, setDeleteId] = useState(null);
+	const [isDelete, setIsDelete] = useState(false);
 	const [selectedId, setSelectedId] = useState(null);
 	const [openDialog, setOpenDialog] = useState(false);
-	const [isDelete, setIsDelete] = useState(false);
-	const [deleteId, setDeleteId] = useState(null);
-	const { openSidebar } = useSelector((state) => state.ui);
+
 	const [deleteChat, { isLoading: isDeleting }] = useDeleteChatMutation();
+	const {data: conversation, isLoading, isSuccess, isError, error, refetch } = useGetConversationQuery();
 
-	const { data, isLoading, isFetching, isSuccess } =
-		useGetMoreChatConversationQuery(page);
 
+	// decide what to fetch more conversation start
 	useEffect(() => {
-		if (isSuccess) {
-			setChatHistory(data?.response?.records?.data);
+		if (page > 1) {
+			dispatch(testApi.endpoints.getMoreConversation.initiate(page));
 		}
-	}, [isSuccess, data?.response?.records?.data]);
+	}, [page, dispatch]);
 
-	useEffect(() => {
-		if (page > 1 && isSuccess) {
-			const uniqueMessages = data?.response?.records?.data?.filter(
-				(item) => !chatHistory?.some((item2) => item?.id === item2?.id)
-			);
-			setChatHistory((prev) => [...prev, ...uniqueMessages]);
-		}
-	}, [page, isSuccess, data?.response?.records?.data, chatHistory]);
-
-	const handleFetChatHistory = () => {
-		if (
-			chatHistory?.length <
-			data?.response?.records?.data?.pagination?.total
-		) {
-			setHasMore(true);
-			setPage(page + 1);
-		} else {
-			setHasMore(false);
-		}
+	const fetchMore = () => {
+		setPage((prevPage) => prevPage + 1);
 	};
 
 	useEffect(() => {
-		if (
-			data?.response?.records?.data?.pagination?.total ===
-			chatHistory?.length
+		if(
+			!isLoading &&
+			conversation?.pagination?.total === conversation?.data?.length
 		) {
 			setHasMore(false);
 		}
-	}, [chatHistory, data?.response?.records?.data]);
+	}, [conversation?.data?.length, conversation?.pagination?.total, isLoading]);
 
-	useEffect(() => {
-		if (isDelete && chatHistory?.length === 1) {
-			setChatHistory([]);
-			dispatch(storeConversationId(null));
-		}
-	}, [isDelete, chatHistory?.length, dispatch]);
+	// decide what to fetch more conversation end
 
 	// delete chat after confirmation
 	useEffect(() => {
@@ -80,16 +58,21 @@ const Sidebar = () => {
 			setDeleteId(null);
 			setOpenDialog(false);
 		}
-	}, [isDelete]);
+	}, [isDelete, deleteId, deleteChat]);
 
-	// all handlers are here
+	// useEffect(() => {
+	// 	if (isDelete) {
+	// 		dispatch(storeConversationId(null));
+	// 	}
+	// }, [isDelete, dispatch]);
+
+	// All handlers are here
 	const handleSelectChatId = (id) => {
 		setSelectedId(id);
 		dispatch(storeConversationId(id));
 	};
 
 	const handleDeleteChat = (id) => {
-		// open dialog for confirmation
 		setDeleteId(id);
 		setOpenDialog(true);
 	};
@@ -116,13 +99,55 @@ const Sidebar = () => {
 		}
 	}, [selectedId, conversationId]);
 
+	// user interface decide what to render
+	let render = null;
+	if (isLoading) {
+		render = (
+			<div className="center__hw">
+				<Spinner />
+			</div>
+		);
+	}
+
+	if (isError) {
+		render = (
+			<div className="center__hw">
+				<button onClick={() => refetch()}>
+					<RetryIcon />
+				</button>
+			</div>
+		);
+	}
+
+	if (isSuccess) {
+		render = (
+			<InfiniteScroll
+				dataLength={conversation?.data?.length}
+				next={fetchMore}
+				hasMore={hasMore}
+				loader={<div className="center__hw"><Spinner /></div>}
+				scrollableTarget="chatSidebarScrollableDiv"
+			>
+				{conversation?.data?.map((item) => (
+					<ListItem
+						key={item?.id}
+						id={item?.id}
+						title={item?.title}
+						isDeleting={isDeleting}
+						selectedId={selectedId}
+						handleDeleteChat={handleDeleteChat}
+						handleSelectChatId={handleSelectChatId}
+					/>
+				))}
+			</InfiniteScroll>
+		);
+	}
+
 	return (
 		<div>
 			<div
 				onClick={handleSidebar}
-				className={`${
-					openSidebar ? "sidebar-overlay" : "hidden"
-				} block sm:hidden`}
+				className={`${ openSidebar ? "sidebar-overlay" : "hidden" } block sm:hidden`}
 			></div>
 			{openDialog && (
 				<Dialog handleCancel={handleCancel} setIsDelete={setIsDelete} />
@@ -139,32 +164,7 @@ const Sidebar = () => {
 						id="chatSidebarScrollableDiv"
 						className="flex-1 px-3 font-medium overflow-hidden hover:overflow-y-auto"
 					>
-						{chatHistory?.length > 0 && (
-							<InfiniteScroll
-								dataLength={chatHistory?.length || []}
-								next={handleFetChatHistory}
-								hasMore={hasMore}
-								loader={
-									<div className="flex justify-center h-full items-center">
-										<Spinner />
-									</div>
-								}
-								scrollableTarget="chatSidebarScrollableDiv"
-								scrollThreshold={1}
-							>
-								{chatHistory?.map((item) => (
-									<ListItem
-										key={item?.id}
-										id={item?.id}
-										title={item?.title}
-										isDeleting={isDeleting}
-										selectedId={selectedId}
-										handleDeleteChat={handleDeleteChat}
-										handleSelectChatId={handleSelectChatId}
-									/>
-								))}
-							</InfiniteScroll>
-						)}
+						{render}
 					</div>
 					<NewChatButton onClick={handleNewChat} />
 				</div>
