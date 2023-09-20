@@ -65,7 +65,7 @@ const Conversation = () => {
 	if (!conversationId) {
 		content = (
 			<div className="conversation__content">
-				<p className="text-gray-500">Select a conversation</p>
+				<p className="text-gray-500">Start conversation</p>
 			</div>
 		);
 	}
@@ -98,7 +98,7 @@ const Conversation = () => {
 	if (!isLoading && isError) {
 		content = (
 			<div className="conversation__content">
-				<p className="text-gray-500">Select a conversation</p>
+				<p className="text-gray-500">Start conversation</p>
 			</div>
 		);
 	}
