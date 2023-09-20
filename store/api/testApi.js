@@ -113,6 +113,41 @@ export const testApi = apiSlice.injectEndpoints({
 			},
 			invalidatesTags: ["Chat"],
 		}),
+
+		deleteChat: builder.mutation({
+			query(chatId) {
+				return {
+					url: `/user/openai/chat/delete`,
+					method: "POST",
+					body: chatId,
+				};
+			},
+			async onQueryStarted({ chatId }, { dispatch, queryFulfilled }) {
+				try {
+					await queryFulfilled;
+					dispatch(
+						apiSlice.util.updateQueryData(
+							"getConversation",
+							undefined,
+							(draft) => {
+								draft.data = draft.data.filter((item) => item.id !== chatId);
+							}
+						)
+					);
+					dispatch(
+						apiSlice.util.updateQueryData(
+							"getChatMessage",
+							chatId,
+							(draft) => {
+								draft.data = [];
+							}
+						)
+					);
+				} catch (error) {}
+			},
+			// invalidatesTags: ["Chat"],
+		}),
+		
 	}),
 	overrideExisting: true,
 });
@@ -122,4 +157,5 @@ export const {
 	useGetChatMoreMessageQuery,
 	useGetConversationQuery,
 	useStoreChatMutation,
+	useDeleteChatMutation,
 } = testApi;

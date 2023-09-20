@@ -7,10 +7,9 @@ import RetryIcon from "./RetryIcon";
 import NewChatButton from "./NewChatButton";
 import { useDispatch, useSelector } from "react-redux";
 import { setOpenSidebar } from "@/store/slices/uiSlice";
-import { useDeleteChatMutation } from "@/store/api/chatApi";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { storeConversationId } from "@/store/slices/chatSlice";
-import { testApi, useGetConversationQuery } from "@/store/api/testApi";
+import { testApi, useDeleteChatMutation, useGetConversationQuery } from "@/store/api/testApi";
 
 const Sidebar = () => {
 	const dispatch = useDispatch();
@@ -21,12 +20,12 @@ const Sidebar = () => {
 	const [hasMore, setHasMore] = useState(true);
 	const [deleteId, setDeleteId] = useState(null);
 	const [isDelete, setIsDelete] = useState(false);
+	const [deleteCount, setDeleteCount] = useState(0);
 	const [selectedId, setSelectedId] = useState(null);
 	const [openDialog, setOpenDialog] = useState(false);
 
 	const [deleteChat, { isLoading: isDeleting }] = useDeleteChatMutation();
 	const {data: conversation, isLoading, isSuccess, isError, error, refetch } = useGetConversationQuery();
-
 
 	// decide what to fetch more conversation start
 	useEffect(() => {
@@ -39,14 +38,20 @@ const Sidebar = () => {
 		setPage((prevPage) => prevPage + 1);
 	};
 
+	// console.log('pagination total', conversation?.pagination);
+	console.log('pagination total', conversation?.pagination?.total);
+	console.log('conversation',conversation?.data?.length);
+	// console.log('delete count', deleteCount)
+	console.log('hasMore',hasMore);
+
 	useEffect(() => {
 		if(
-			!isLoading &&
-			conversation?.pagination?.total === conversation?.data?.length
+			!isLoading && 
+			conversation?.pagination?.total  === conversation?.data?.length
 		) {
 			setHasMore(false);
 		}
-	}, [conversation?.data?.length, conversation?.pagination?.total, isLoading]);
+	}, [conversation?.data?.length, conversation?.pagination?.total, deleteCount, isLoading]);
 
 	// decide what to fetch more conversation end
 
@@ -54,6 +59,7 @@ const Sidebar = () => {
 	useEffect(() => {
 		if (isDelete) {
 			deleteChat({ chatId: deleteId });
+			// setDeleteCount((prevCount) => prevCount + 1);
 			setIsDelete(false);
 			setDeleteId(null);
 			setOpenDialog(false);
