@@ -6,12 +6,10 @@ import { BotTyping } from "./BotTyping";
 import UserMessage from "./UserMessage";
 import BotMessage from "./BotMessage";
 import ConversationLoader from "./ConversationLoader";
-import { storeMessages } from "@/store/slices/chatSlice";
-import { chatApi, useGetChatHistoryQuery } from "@/store/api/chatApi";
 import { testApi, useGetChatMessageQuery } from "@/store/api/testApi";
 
 const Conversation = () => {
-	const { conversationId } = useSelector((state) => state.chat);
+	const { initialMessage, conversationId } = useSelector((state) => state.chat);
 	const { isBotTyping } = useSelector((state) => state.ui);
 	const [page, setPage] = useState(1);
 	const [hasMore, setHasMore] = useState(true);
@@ -20,9 +18,9 @@ const Conversation = () => {
 
 	const {
 		data: messages,
-		errors,
 		isError,
 		isLoading,
+		isFetching,
 		isSuccess,
 	} = useGetChatMessageQuery(conversationId, {
 		skip: !conversationId,
@@ -68,6 +66,14 @@ const Conversation = () => {
 			</div>
 		);
 	}
+	if (!conversationId && initialMessage) {
+		content = (
+			<div className="relative flex-1  p-4 flex flex-col-reverse">
+				<div>{ <BotTyping />}</div>
+				<UserMessage chat={initialMessage} />
+			</div>
+		);
+	}
 	if (!conversationId && messages?.length > 0) {
 		content = (
 			<>
@@ -77,9 +83,7 @@ const Conversation = () => {
 						.sort((a, b) => b.id - a.id)
 						.map((chat) => (
 							<div key={chat?.id}>
-								{chat?.user_message && (
-									<UserMessage chat={chat} />
-								)}
+								{chat?.user_message && <UserMessage chat={chat} />}
 							</div>
 						))}
 				</div>
@@ -130,12 +134,8 @@ const Conversation = () => {
 							.sort((a, b) => b.id - a.id)
 							.map((chat) => (
 								<div key={chat?.id}>
-									{chat?.user_message && (
-										<UserMessage chat={chat} />
-									)}
-									{chat?.bot_message && (
-										<BotMessage chat={chat} />
-									)}
+									{chat?.user_message && <UserMessage chat={chat} />}
+									{chat?.bot_message && <BotMessage chat={chat} />}
 								</div>
 							))}
 					</InfiniteScroll>

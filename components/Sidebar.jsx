@@ -9,8 +9,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setOpenSidebar } from "@/store/slices/uiSlice";
 import { useDeleteChatMutation } from "@/store/api/chatApi";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { storeConversationId } from "@/store/slices/chatSlice";
 import { testApi, useGetConversationQuery } from "@/store/api/testApi";
-import { resetMessages, storeConversationId } from "@/store/slices/chatSlice";
 
 const Sidebar = () => {
 	const dispatch = useDispatch();
@@ -87,7 +87,6 @@ const Sidebar = () => {
 	};
 
 	const handleNewChat = () => {
-		dispatch(resetMessages());
 		dispatch(storeConversationId(null));
 		dispatch(setOpenSidebar());
 		setSelectedId(null);

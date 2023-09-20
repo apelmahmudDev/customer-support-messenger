@@ -34,13 +34,15 @@ const AutoExpandingTextarea = () => {
 	const handleSubmitUserValue = (e) => {
 		e.preventDefault();
 		dispatch(setBotTyping(true));
-		dispatch(
-			storeTempMessage({
-				user_message: value,
-				id: Date.now().toString(),
-				isTemp: true,
-			})
-		);
+		if(!conversationId){
+			dispatch(
+				storeTempMessage({
+					user_message: value,
+					id: Date.now().toString(),
+					isTemp: true,
+				})
+			);
+		};
 		storeChat({ promt: value, conversationId });
 		setValue("");
 	};
@@ -49,13 +51,15 @@ const AutoExpandingTextarea = () => {
 		if (value.length && e.key === "Enter" && !e.shiftKey) {
 			e.preventDefault();
 			dispatch(setBotTyping(true));
-			dispatch(
-				storeTempMessage({
-					user_message: value,
-					id: Date.now().toString(),
-					isTemp: true,
-				})
-			);
+			if(!conversationId){
+				dispatch(
+					storeTempMessage({
+						user_message: value,
+						id: Date.now().toString(),
+						isTemp: true,
+					})
+				);
+			};
 			storeChat({ promt: value, conversationId });
 			setValue("");
 		}

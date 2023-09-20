@@ -1,5 +1,6 @@
 import { apiSlice } from "./apiSlice";
 import { setBotTyping } from "../slices/uiSlice";
+import { storeTempMessage } from "../slices/chatSlice";
 
 export const testApi = apiSlice.injectEndpoints({
 	endpoints: (builder) => ({
@@ -15,6 +16,7 @@ export const testApi = apiSlice.injectEndpoints({
 			async onQueryStarted(arg, { dispatch, queryFulfilled }) {
 				try {
 					await queryFulfilled;
+					dispatch(storeTempMessage(null));
 					dispatch(setBotTyping(false));
 				} catch (error) {
 					dispatch(setBotTyping(false));
