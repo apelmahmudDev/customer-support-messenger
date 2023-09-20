@@ -4,10 +4,14 @@ import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { testApi, useGetChatMessageQuery } from "@/store/api/testApi";
-
+const conversationId = 1;
 export default function Test() {
 	const dispatch = useDispatch();
-	const { data: messages, error, isLoading } = useGetChatMessageQuery();
+	const {
+		data: messages,
+		error,
+		isLoading,
+	} = useGetChatMessageQuery(conversationId);
 	const [hasMore, setHasMore] = useState(true);
 	const [page, setPage] = useState(1);
 	const dataLength = 40;
@@ -19,7 +23,12 @@ export default function Test() {
 
 	useEffect(() => {
 		if (page > 1) {
-			dispatch(testApi.endpoints.getChatMoreMessage.initiate({ page }));
+			dispatch(
+				testApi.endpoints.getChatMoreMessage.initiate({
+					page,
+					conversationId,
+				})
+			);
 		}
 	}, [page, dispatch]);
 

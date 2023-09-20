@@ -65,6 +65,13 @@ const Sidebar = () => {
 		}
 	}, [chatHistory, data?.response?.records?.data]);
 
+	useEffect(() => {
+		if (isDelete && chatHistory?.length === 1) {
+			setChatHistory([]);
+			dispatch(storeConversationId(null));
+		}
+	}, [isDelete, chatHistory?.length, dispatch]);
+
 	// delete chat after confirmation
 	useEffect(() => {
 		if (isDelete) {
@@ -132,30 +139,32 @@ const Sidebar = () => {
 						id="chatSidebarScrollableDiv"
 						className="flex-1 px-3 font-medium overflow-hidden hover:overflow-y-auto"
 					>
-						<InfiniteScroll
-							dataLength={chatHistory?.length || []}
-							next={handleFetChatHistory}
-							hasMore={hasMore}
-							loader={
-								<div className="flex justify-center h-full items-center">
-									<Spinner />
-								</div>
-							}
-							scrollableTarget="chatSidebarScrollableDiv"
-							scrollThreshold={1}
-						>
-							{chatHistory?.map((item) => (
-								<ListItem
-									key={item?.id}
-									id={item?.id}
-									title={item?.title}
-									isDeleting={isDeleting}
-									selectedId={selectedId}
-									handleDeleteChat={handleDeleteChat}
-									handleSelectChatId={handleSelectChatId}
-								/>
-							))}
-						</InfiniteScroll>
+						{chatHistory?.length > 0 && (
+							<InfiniteScroll
+								dataLength={chatHistory?.length || []}
+								next={handleFetChatHistory}
+								hasMore={hasMore}
+								loader={
+									<div className="flex justify-center h-full items-center">
+										<Spinner />
+									</div>
+								}
+								scrollableTarget="chatSidebarScrollableDiv"
+								scrollThreshold={1}
+							>
+								{chatHistory?.map((item) => (
+									<ListItem
+										key={item?.id}
+										id={item?.id}
+										title={item?.title}
+										isDeleting={isDeleting}
+										selectedId={selectedId}
+										handleDeleteChat={handleDeleteChat}
+										handleSelectChatId={handleSelectChatId}
+									/>
+								))}
+							</InfiniteScroll>
+						)}
 					</div>
 					<NewChatButton onClick={handleNewChat} />
 				</div>

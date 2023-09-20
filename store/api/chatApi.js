@@ -13,54 +13,7 @@ export const chatApi = apiSlice.injectEndpoints({
 			query: (page) => `/user/openai/chat/conversation?page=${page}`,
 			providesTags: ["Chat"],
 		}),
-		getChatHistory: builder.query({
-			query: ({ conversationId }) =>
-				`/user/openai/chat/history/${conversationId}?page=1`,
-			async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-				try {
-					await queryFulfilled;
-					dispatch(removeLastTempMessage());
-					dispatch(setBotTyping(false));
-				} catch (error) {
-					dispatch(setBotTyping(false));
-					// do nothing
-				}
-			},
-			providesTags: ["Chat"],
-		}),
-		getMoreChatHistory: builder.query({
-			query: ({ conversationId, page }) =>
-				`/user/openai/chat/history/${conversationId}?page=${page}`,
-			async onQueryStarted(
-				{ conversationId },
-				{ queryFulfilled, dispatch }
-			) {
-				try {
-					const result = await queryFulfilled;
-					const chat = result?.data?.response?.records?.data;
 
-					if (chat?.length > 0) {
-						dispatch(storeMessages(chat));
-						// update conversation cache pessimistically
-						// const result = dispatch(
-						// 	baseApi.util.updateQueryData(
-						// 		"getChatHistory",
-						// 		conversationId,
-						// 		(draft) => {
-						// 			console.log("chat from updateQuery", chat);
-						// 			return {
-						// 				...draft,
-						// 			};
-						// 		}
-						// 	)
-						// );
-						// console.log("result", result);
-						// console.log("result dr", JSON.stringify(result));
-					}
-				} catch (err) {}
-			},
-			providesTags: ["Chat"],
-		}),
 		addChat: builder.mutation({
 			query(body) {
 				return {

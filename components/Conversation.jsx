@@ -25,13 +25,21 @@ const Conversation = () => {
 		isError,
 		isLoading,
 		isSuccess,
-	} = useGetChatMessageQuery() || {};
+	} = useGetChatMessageQuery(conversationId, {
+		skip: !conversationId,
+		refetchOnMountOrArgChange: true,
+	}) || {};
 
 	useEffect(() => {
 		if (page > 1) {
-			dispatch(testApi.endpoints.getChatMoreMessage.initiate({ page }));
+			dispatch(
+				testApi.endpoints.getChatMoreMessage.initiate({
+					page,
+					conversationId,
+				})
+			);
 		}
-	}, [page, dispatch]);
+	}, [page, dispatch, conversationId]);
 
 	const fetchMore = () => {
 		setPage((prevPage) => prevPage + 1);
@@ -40,41 +48,46 @@ const Conversation = () => {
 	useEffect(() => {
 		if (
 			!isLoading &&
+			conversationId &&
 			messages?.pagination?.total === messages?.data?.length
 		) {
 			setHasMore(false);
 		}
-	}, [messages?.data?.length, messages?.pagination?.total, isLoading]);
-	console.log("hasMore", hasMore);
+	}, [
+		messages?.data?.length,
+		messages?.pagination?.total,
+		isLoading,
+		conversationId,
+	]);
 
 	// user interface decide what to render
 	let content = null;
-	// if (!conversationId) {
-	// 	content = (
-	// 		<div className="conversation__content">
-	// 			<p className="text-gray-500">Select a conversation</p>
-	// 		</div>
-	// 	);
-	// }
-	// if (!conversationId && messages?.length > 0) {
-	// 	content = (
-	// 		<>
-	// 			<div className="flex-1 overflow-y-auto mx-auto w-full p-4 flex flex-col-reverse">
-	// 				{messages?.data
-	// 					.slice()
-	// 					.sort((a, b) => b.id - a.id)
-	// 					.map((chat) => (
-	// 						<div key={chat?.id}>
-	// 							{chat?.user_message && (
-	// 								<UserMessage chat={chat} />
-	// 							)}
-	// 						</div>
-	// 					))}
-	// 			</div>
-	// 			<div className="p-4">{isBotTyping && <BotTyping />}</div>
-	// 		</>
-	// 	);
-	// }
+	if (!conversationId) {
+		content = (
+			<div className="conversation__content">
+				<p className="text-gray-500">Select a conversation</p>
+			</div>
+		);
+	}
+	if (!conversationId && messages?.length > 0) {
+		content = (
+			<>
+				<div className="flex-1 overflow-y-auto mx-auto w-full p-4 flex flex-col-reverse">
+					{messages?.data
+						.slice()
+						.sort((a, b) => b.id - a.id)
+						.map((chat) => (
+							<div key={chat?.id}>
+								{chat?.user_message && (
+									<UserMessage chat={chat} />
+								)}
+							</div>
+						))}
+				</div>
+				<div className="p-4">{isBotTyping && <BotTyping />}</div>
+			</>
+		);
+	}
 	if (isLoading) {
 		content = (
 			<div className="conversation__content">
@@ -82,20 +95,20 @@ const Conversation = () => {
 			</div>
 		);
 	}
-	// if (!isLoading && isError) {
-	// 	content = (
-	// 		<div className="conversation__content">
-	// 			<p className="text-gray-500">Select a conversation</p>
-	// 		</div>
-	// 	);
-	// }
-	// if (!isLoading && !isError && isSuccess && !messages?.data?.length) {
-	// 	content = (
-	// 		<div className="conversation__content">
-	// 			<p className="text-gray-500">No messages yet!</p>
-	// 		</div>
-	// 	);
-	// }
+	if (!isLoading && isError) {
+		content = (
+			<div className="conversation__content">
+				<p className="text-gray-500">Select a conversation</p>
+			</div>
+		);
+	}
+	if (!isLoading && !isError && isSuccess && !messages?.data?.length) {
+		content = (
+			<div className="conversation__content">
+				<p className="text-gray-500">No messages yet!</p>
+			</div>
+		);
+	}
 	if (!isLoading && !isError && isSuccess && messages?.data?.length > 0) {
 		content = (
 			<>
