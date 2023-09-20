@@ -1,14 +1,11 @@
 "use client";
-import SendIcon from "./SendIcon";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import useAutoSizeTextArea from "@/hook/useAutoSizeTextArea";
-import {
-	storeConversationId,
-	storeTempMessage,
-} from "@/store/slices/chatSlice";
-import { useAddChatMutation } from "@/store/api/chatApi";
 import { setBotTyping } from "@/store/slices/uiSlice";
+import SendIcon from "./SendIcon";
+import { useStoreChatMutation } from "@/store/api/testApi";
+import useAutoSizeTextArea from "@/hook/useAutoSizeTextArea";
+import { storeConversationId, storeTempMessage } from "@/store/slices/chatSlice";
 
 const AutoExpandingTextarea = () => {
 	const dispatch = useDispatch();
@@ -18,7 +15,7 @@ const AutoExpandingTextarea = () => {
 	const [value, setValue] = useState("");
 	const textAreaRef = useRef(null);
 
-	const [addChat, { data, isSuccess }] = useAddChatMutation();
+	const [storeChat, { data, isSuccess }] = useStoreChatMutation();
 
 	useAutoSizeTextArea(textAreaRef.current, value);
 
@@ -44,10 +41,7 @@ const AutoExpandingTextarea = () => {
 				isTemp: true,
 			})
 		);
-		addChat({
-			promt: value,
-			chatId: conversationId,
-		});
+		storeChat({ promt: value, conversationId });
 		setValue("");
 	};
 
@@ -62,10 +56,7 @@ const AutoExpandingTextarea = () => {
 					isTemp: true,
 				})
 			);
-			addChat({
-				promt: value,
-				chatId: conversationId,
-			});
+			storeChat({ promt: value, conversationId });
 			setValue("");
 		}
 	};
@@ -89,8 +80,8 @@ const AutoExpandingTextarea = () => {
 					ref={textAreaRef}
 					rows={1}
 					value={value}
-					style={{ maxHeight: "200px" }}
 					autoFocus
+					style={{ maxHeight: "200px" }}
 				/>
 				<button
 					className="chat-send-btn"

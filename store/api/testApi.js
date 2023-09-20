@@ -57,6 +57,7 @@ export const testApi = apiSlice.injectEndpoints({
 					pagination: response?.response?.records?.pagination,
 				};
 			},
+			providesTags: ["Chat"],
 		}),
 
 		getMoreConversation: builder.query({
@@ -88,65 +89,27 @@ export const testApi = apiSlice.injectEndpoints({
 					body: { promt: body.promt, chatId: body.conversationId },
 				};
 			},
-			//start  optimistic
-			async onQueryStarted(
-				{ conversationId, promt },
-				{ dispatch, queryFulfilled }
-			) {
+			async onQueryStarted({ conversationId, promt },{ dispatch, queryFulfilled }) {
+				// optimistic update start
 				const patch = {
-					id: Date.now(),
-					title: promt,
+					user_message: promt,
+					id: Date.now().toString(),
+					isTemp: true,
 				};
-
-				// console.log("id", conversationId);
-				// conversation optimistic update start
-
 				const patchResult = dispatch(
-					apiSlice.util.updateQueryData(
-						"getConversation",
-						undefined,
-						(draft) => {
-							console.log("message", JSON.stringify(draft?.data));
+					apiSlice.util.updateQueryData("getChatMessage", conversationId, (draft) => {
 							draft.data.push(patch);
 						}
 					)
 				);
-
-				// conversation optimistic update start
-
-				// history optimistic update start
-
-				// const patch = {
-				// 	user_message: promt,
-				// 	id: Date.now().toString(),
-				// 	isTemp: true,
-				// };
-
-				// const patchResult = dispatch(
-				// 	apiSlice.util.updateQueryData(
-				// 		"getChatMessage",
-				// 		conversationId,
-				// 		(draft) => {
-				// 			console.log("history", JSON.stringify(draft));
-				// 			draft.data.push(patch);
-				// 		}
-				// 	)
-				// );
-
-				// history optimistic update end
-
 				try {
 					await queryFulfilled;
 				} catch {
-					patchResult.undo();
-					/**
-					 * Alternatively, on failure you can invalidate the corresponding cache tags
-					 * to trigger a re-fetch:
-					 * dispatch(api.util.invalidateTags(['Post']))
-					 */
+					patchResult.undo();	
 				}
+				// optimistic update end
 			},
-			//start  optimistic
+			invalidatesTags: ["Chat"],
 		}),
 	}),
 	overrideExisting: true,
