@@ -4,12 +4,12 @@ import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { testApi, useGetConversationQuery } from "@/store/api/testApi";
+import TempInput from "@/components/TempInput";
 const conversationId = 52;
 export default function Test() {
 	const dispatch = useDispatch();
 	const [hasMore, setHasMore] = useState(true);
 	const [page, setPage] = useState(1);
-	const dataLength = 24;
 
 	const {
 		data: conversation,
@@ -31,10 +31,13 @@ export default function Test() {
 	}, [page, dispatch]);
 
 	useEffect(() => {
-		if (conversation?.data === dataLength) {
+		if (
+			!isLoading &&
+			conversation?.pagination?.total === conversation?.data?.length
+		) {
 			setHasMore(false);
 		}
-	}, [conversation?.data]);
+	}, [conversation, isLoading]);
 
 	return (
 		<div className="max-w-xl p-5">
@@ -61,6 +64,7 @@ export default function Test() {
 					</InfiniteScroll>
 				)}
 			</div>
+			<TempInput />
 		</div>
 	);
 }
