@@ -1,5 +1,5 @@
-import { setBotTyping } from "../slices/uiSlice";
 import { apiSlice } from "./apiSlice";
+import { setBotTyping } from "../slices/uiSlice";
 
 export const testApi = apiSlice.injectEndpoints({
 	endpoints: (builder) => ({
