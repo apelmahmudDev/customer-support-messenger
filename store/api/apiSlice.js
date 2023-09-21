@@ -13,6 +13,8 @@ export const apiSlice = createApi({
 			return headers;
 		},
 	}),
+
+	refetchOnReconnect: true,
 	tagTypes: ["Chat"],
 	endpoints: (builder) => ({}),
 });

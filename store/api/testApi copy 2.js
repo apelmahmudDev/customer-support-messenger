@@ -1,6 +1,5 @@
 import { apiSlice } from "./apiSlice";
 import { setBotTyping } from "../slices/uiSlice";
-import { storeTempMessage } from "../slices/chatSlice";
 
 export const testApi = apiSlice.injectEndpoints({
 	endpoints: (builder) => ({
@@ -16,7 +15,6 @@ export const testApi = apiSlice.injectEndpoints({
 			async onQueryStarted(arg, { dispatch, queryFulfilled }) {
 				try {
 					await queryFulfilled;
-					dispatch(storeTempMessage(null));
 					dispatch(setBotTyping(false));
 				} catch (error) {
 					dispatch(setBotTyping(false));
@@ -59,7 +57,6 @@ export const testApi = apiSlice.injectEndpoints({
 					pagination: response?.response?.records?.pagination,
 				};
 			},
-			providesTags: ["Chat"],
 		}),
 
 		getMoreConversation: builder.query({
@@ -91,63 +88,66 @@ export const testApi = apiSlice.injectEndpoints({
 					body: { promt: body.promt, chatId: body.conversationId },
 				};
 			},
-			async onQueryStarted({ conversationId, promt },{ dispatch, queryFulfilled }) {
-				// optimistic update start
+			//start  optimistic
+			async onQueryStarted(
+				{ conversationId, promt },
+				{ dispatch, queryFulfilled }
+			) {
 				const patch = {
-					user_message: promt,
-					id: Date.now().toString(),
-					isTemp: true,
+					id: Date.now(),
+					title: promt,
 				};
+
+				// console.log("id", conversationId);
+				// conversation optimistic update start
+
 				const patchResult = dispatch(
-					apiSlice.util.updateQueryData("getChatMessage", conversationId, (draft) => {
+					apiSlice.util.updateQueryData(
+						"getConversation",
+						undefined,
+						(draft) => {
+							console.log("message", JSON.stringify(draft?.data));
 							draft.data.push(patch);
 						}
 					)
 				);
+
+				// conversation optimistic update start
+
+				// history optimistic update start
+
+				// const patch = {
+				// 	user_message: promt,
+				// 	id: Date.now().toString(),
+				// 	isTemp: true,
+				// };
+
+				// const patchResult = dispatch(
+				// 	apiSlice.util.updateQueryData(
+				// 		"getChatMessage",
+				// 		conversationId,
+				// 		(draft) => {
+				// 			console.log("history", JSON.stringify(draft));
+				// 			draft.data.push(patch);
+				// 		}
+				// 	)
+				// );
+
+				// history optimistic update end
+
 				try {
 					await queryFulfilled;
 				} catch {
-					patchResult.undo();	
+					patchResult.undo();
+					/**
+					 * Alternatively, on failure you can invalidate the corresponding cache tags
+					 * to trigger a re-fetch:
+					 * dispatch(api.util.invalidateTags(['Post']))
+					 */
 				}
-				// optimistic update end
 			},
-			invalidatesTags: ["Chat"],
+			//start  optimistic
 		}),
-
-		deleteChat: builder.mutation({
-			query(chatId) {
-				return {
-					url: `/user/openai/chat/delete`,
-					method: "POST",
-					body: chatId,
-				};
-			},
-			async onQueryStarted({ chatId }, { dispatch, queryFulfilled }) {
-				try {
-					await queryFulfilled;
-					dispatch(
-						apiSlice.util.updateQueryData(
-							"getConversation",
-							undefined,
-							(draft) => {
-								draft.data = draft.data.filter((item) => item.id !== chatId);
-							}
-						)
-					);
-					dispatch(
-						apiSlice.util.updateQueryData(
-							"getChatMessage",
-							chatId,
-							(draft) => {
-								draft.data = [];
-							}
-						)
-					);
-				} catch (error) {}
-			},
-			// invalidatesTags: ["Chat"],
-		}),
-		
 	}),
 	overrideExisting: true,
 });
@@ -157,5 +157,4 @@ export const {
 	useGetChatMoreMessageQuery,
 	useGetConversationQuery,
 	useStoreChatMutation,
-	useDeleteChatMutation,
 } = testApi;
