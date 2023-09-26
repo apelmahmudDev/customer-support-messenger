@@ -33,33 +33,6 @@ input:-webkit-autofill:active {
 
 /* end reset css */
 
-.chat-sidebar {
-	@apply fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-dark-secondary border-r sm:translate-x-0;
-}
-
-.center__hw {
-	@apply flex justify-center h-full items-center;
-}
-
-.new-chat__button {
-	@apply mx-3 mt-3 flex items-center gap-2 sm:gap-3 text-white border border-white hover:bg-lighter-gray active:bg-transparent transition-all ease-out p-2 md:p-3 rounded-md md:rounded-lg break-all text-sm md:text-base overflow-hidden;
-}
-
-.chat-send-box {
-	@apply flex flex-col w-full p-4 pr-0 flex-grow relative border border-black/10 bg-[#F6F3F2] text-dark-primary rounded-xl shadow-sm;
-}
-
-.chat-textarea {
-	@apply w-full pr-12 resize-none outline-none bg-[#F6F3F2] focus:outline-none focus:ring-0 focus-visible:ring-0 text-sm md:text-base;
-}
-
-.chat-send-btn {
-	@apply absolute p-2 rounded-full right-2 disabled:bg-slate-400 text-black bottom-1.5 md:bottom-2 transition-colors disabled:opacity-40 bg-gradient-to-b from-[#ffcf4b] to-[#e60f83];
-}
-.conversation__content {
-	@apply relative flex-1 w-full p-4 flex flex-col items-center justify-center;
-}
-
 .auth-shadow {
 	box-shadow: 0px 40px 64px -30px rgba(20, 20, 20, 0.1);
 }
@@ -173,3 +146,30 @@ input:-webkit-autofill:active {
 	}
 }
 /* end typing animation css */
+
+.chat-sidebar {
+	@apply fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-dark-secondary border-r sm:translate-x-0;
+}
+
+.center__hw {
+	@apply flex justify-center h-full items-center;
+}
+
+.new-chat__button {
+	@apply mx-3 mt-3 flex items-center gap-2 sm:gap-3 text-white border border-white hover:bg-lighter-gray active:bg-transparent transition-all ease-out p-2 md:p-3 rounded-md md:rounded-lg break-all text-sm md:text-base overflow-hidden;
+}
+
+.chat-send-box {
+	@apply flex flex-col w-full p-4 pr-0 flex-grow relative border border-black/10 bg-[#F6F3F2] text-dark-primary rounded-xl shadow-sm;
+}
+
+.chat-textarea {
+	@apply w-full pr-12 resize-none outline-none bg-[#F6F3F2] focus:outline-none focus:ring-0 focus-visible:ring-0 text-sm md:text-base;
+}
+
+.chat-send-btn {
+	@apply absolute p-2 rounded-full right-2 disabled:bg-slate-400 text-black bottom-1.5 md:bottom-2 transition-colors disabled:opacity-40 bg-gradient-to-b from-[#ffcf4b] to-[#e60f83];
+}
+.conversation__content {
+	@apply relative flex-1 w-full p-4 flex flex-col items-center justify-center;
+}

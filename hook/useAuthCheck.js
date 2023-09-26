@@ -1,22 +1,24 @@
 "use client";
+import { userLoggedIn } from "@/store/slices/authSlice";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { userLoggedIn } from "../features/auth/authSlice";
+import { getCookie } from "cookies-next";
 
 export default function useAuthCheck() {
 	const dispatch = useDispatch();
 	const [authChecked, setAuthChecked] = useState(false);
 
 	useEffect(() => {
-		const localAuth = localStorage?.getItem("auth");
+		const cookieUser = getCookie("user");
+		const token = getCookie("token");
 
-		if (localAuth) {
-			const auth = JSON.parse(localAuth);
-			if (auth?.token && auth?.user) {
+		if (token && cookieUser) {
+			const user = JSON.parse(cookieUser);
+			if (token && user) {
 				dispatch(
 					userLoggedIn({
-						token: auth.token,
-						user: auth.user,
+						token,
+						user,
 					})
 				);
 			}

@@ -1,15 +1,23 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Input from "./Input";
 import AuthButton from "./AuthButton";
 import GoogleIcon from "./GoogleIcon";
 import OpenEyeIcon from "./OpenEyeIcon";
 import CloseEyeIcon from "./CloseEyeIcon";
+import { useRouter } from "next/navigation";
 import PasswordTypeButton from "./PasswordTypeButton";
 import LoginProviderButton from "./LoginProviderButton";
 import { validateForm } from "@/lib/validateForm";
+import { useLoginMutation } from "@/store/api/authApi";
+import useAuth from "@/hook/useAuth";
+import WarningIcon from "./WarningIcon";
 
 const LoginModal = () => {
+	const router = useRouter();
+	const isAuth = useAuth();
+	const [login, { isLoading, isError, error }] = useLoginMutation();
+
 	const [showPassword, setShowPassword] = useState(false);
 	const [errors, setErrors] = useState({});
 	const [formData, setFormData] = useState({
@@ -26,8 +34,19 @@ const LoginModal = () => {
 		e.preventDefault();
 		const validationErrors = validateForm(formData);
 		setErrors(validationErrors);
+
 		// Handle form submission logic here...
+		const keys = Object.keys(validationErrors);
+		if (keys.length === 0) {
+			login(formData);
+		}
 	};
+
+	useEffect(() => {
+		if (isAuth) {
+			router.push("/");
+		}
+	}, [isAuth, router]);
 
 	return (
 		<div className="auth-shadow max-w-md md:max-w-lg w-full bg-white p-8 sm:p-10 rounded-2xl lg:rounded-3xl">
@@ -95,8 +114,18 @@ const LoginModal = () => {
 							</span>
 						)}
 					</div>
+
+					{!isLoading && isError && (
+						<div className="flex items-center gap-2 text-xs text-red-600 break-all">
+							<WarningIcon />
+							<span>
+								{error?.data?.response?.status?.message}
+							</span>
+						</div>
+					)}
+
 					<div className="flex flex-col space-y-1">
-						<AuthButton type="submit" />
+						<AuthButton type="submit" isLoading={isLoading} />
 					</div>
 					<p className="text-sm md:text-md text-dark-primary break-all text-center">
 						Don’t have an account?{" "}

@@ -94,7 +94,9 @@ const ListItem = ({
 						</button>
 						<button onClick={() => handleDeleteChat(id)}>
 							{isDeleting && selectedId === id ? (
-								<Spinner small />
+								<div className="pr-1 mb-1">
+									<Spinner small />
+								</div>
 							) : (
 								<TrashIcon />
 							)}
