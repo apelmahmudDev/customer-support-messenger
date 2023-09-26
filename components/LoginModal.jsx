@@ -10,13 +10,14 @@ import PasswordTypeButton from "./PasswordTypeButton";
 import LoginProviderButton from "./LoginProviderButton";
 import { validateForm } from "@/lib/validateForm";
 import { useLoginMutation } from "@/store/api/authApi";
-import { useSelector } from "react-redux";
+import useAuth from "@/hook/useAuth";
+import WarningIcon from "./WarningIcon";
 
 const LoginModal = () => {
 	const router = useRouter();
-	const [login, { data, isLoading, isError, error }] = useLoginMutation();
+	const isAuth = useAuth();
+	const [login, { isLoading, isError, error }] = useLoginMutation();
 
-	const { token } = useSelector((state) => state.auth);
 	const [showPassword, setShowPassword] = useState(false);
 	const [errors, setErrors] = useState({});
 	const [formData, setFormData] = useState({
@@ -41,12 +42,11 @@ const LoginModal = () => {
 		}
 	};
 
-	// redirect to home if user is already logged in
 	useEffect(() => {
-		if (token) {
+		if (isAuth) {
 			router.push("/");
 		}
-	}, [token]);
+	}, [isAuth, router]);
 
 	return (
 		<div className="auth-shadow max-w-md md:max-w-lg w-full bg-white p-8 sm:p-10 rounded-2xl lg:rounded-3xl">
@@ -114,6 +114,16 @@ const LoginModal = () => {
 							</span>
 						)}
 					</div>
+
+					{!isLoading && isError && (
+						<div className="flex items-center gap-2 text-xs text-red-600 break-all">
+							<WarningIcon />
+							<span>
+								{error?.data?.response?.status?.message}
+							</span>
+						</div>
+					)}
+
 					<div className="flex flex-col space-y-1">
 						<AuthButton type="submit" isLoading={isLoading} />
 					</div>

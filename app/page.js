@@ -1,9 +1,9 @@
 "use client";
+import withAuth from "@/HOC/withAuth";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import Conversation from "@/components/Conversation";
 import AutoExpandingTextarea from "@/components/AutoExpandingTextarea";
-import withAuth from "@/HOC/withAuth";
 
 const Home = () => {
 	return (
