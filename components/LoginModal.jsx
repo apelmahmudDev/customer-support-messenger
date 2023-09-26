@@ -1,18 +1,22 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Input from "./Input";
 import AuthButton from "./AuthButton";
 import GoogleIcon from "./GoogleIcon";
 import OpenEyeIcon from "./OpenEyeIcon";
 import CloseEyeIcon from "./CloseEyeIcon";
+import { useRouter } from "next/navigation";
 import PasswordTypeButton from "./PasswordTypeButton";
 import LoginProviderButton from "./LoginProviderButton";
 import { validateForm } from "@/lib/validateForm";
 import { useLoginMutation } from "@/store/api/authApi";
+import { useSelector } from "react-redux";
 
 const LoginModal = () => {
+	const router = useRouter();
 	const [login, { data, isLoading, isError, error }] = useLoginMutation();
 
+	const { token } = useSelector((state) => state.auth);
 	const [showPassword, setShowPassword] = useState(false);
 	const [errors, setErrors] = useState({});
 	const [formData, setFormData] = useState({
@@ -36,6 +40,13 @@ const LoginModal = () => {
 			login(formData);
 		}
 	};
+
+	// redirect to home if user is already logged in
+	useEffect(() => {
+		if (token) {
+			router.push("/");
+		}
+	}, [token]);
 
 	return (
 		<div className="auth-shadow max-w-md md:max-w-lg w-full bg-white p-8 sm:p-10 rounded-2xl lg:rounded-3xl">
@@ -88,7 +99,13 @@ const LoginModal = () => {
 							/>
 							<PasswordTypeButton
 								onClick={() => setShowPassword((prev) => !prev)}
-								icon={showPassword ? <OpenEyeIcon /> : <CloseEyeIcon />}
+								icon={
+									showPassword ? (
+										<OpenEyeIcon />
+									) : (
+										<CloseEyeIcon />
+									)
+								}
 							/>
 						</div>
 						{errors.password && (
