@@ -1,4 +1,5 @@
 "use client";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Spinner from "./Spinner";
 import Dialog from "./Dialog";
@@ -9,9 +10,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { setOpenSidebar } from "@/store/slices/uiSlice";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { storeConversationId } from "@/store/slices/chatSlice";
-import { testApi, useDeleteChatMutation, useGetConversationQuery } from "@/store/api/testApi";
+import {
+	testApi,
+	useDeleteChatMutation,
+	useGetConversationQuery,
+} from "@/store/api/testApi";
 
 const Sidebar = () => {
+	const { data: session, status } = useSession();
 	const dispatch = useDispatch();
 	const { openSidebar } = useSelector((state) => state.ui);
 	const { conversationId } = useSelector((state) => state.chat);
@@ -24,7 +30,14 @@ const Sidebar = () => {
 	const [openDialog, setOpenDialog] = useState(false);
 
 	const [deleteChat, { isLoading: isDeleting }] = useDeleteChatMutation();
-	const {data: conversation, isLoading, isSuccess, isError, error, refetch } = useGetConversationQuery();
+	const {
+		data: conversation,
+		isLoading,
+		isSuccess,
+		isError,
+		error,
+		refetch,
+	} = useGetConversationQuery();
 
 	// decide what to fetch more conversation start
 	useEffect(() => {
@@ -37,15 +50,18 @@ const Sidebar = () => {
 		setPage((prevPage) => prevPage + 1);
 	};
 
-
 	useEffect(() => {
-		if(
-			!isLoading && 
-			conversation?.pagination?.total  === conversation?.data?.length
+		if (
+			!isLoading &&
+			conversation?.pagination?.total === conversation?.data?.length
 		) {
 			setHasMore(false);
 		}
-	}, [conversation?.data?.length, conversation?.pagination?.total, isLoading]);
+	}, [
+		conversation?.data?.length,
+		conversation?.pagination?.total,
+		isLoading,
+	]);
 
 	// decide what to fetch more conversation end
 
@@ -108,7 +124,7 @@ const Sidebar = () => {
 	}
 
 	if (!isLoading && isError) {
-		render = ""
+		render = "";
 	}
 
 	// if (isError) {
@@ -127,7 +143,11 @@ const Sidebar = () => {
 				dataLength={conversation?.data?.length}
 				next={fetchMore}
 				hasMore={hasMore}
-				loader={<div className="center__hw"><Spinner /></div>}
+				loader={
+					<div className="center__hw">
+						<Spinner />
+					</div>
+				}
 				scrollableTarget="chatSidebarScrollableDiv"
 			>
 				{conversation?.data?.map((item) => (
@@ -149,7 +169,9 @@ const Sidebar = () => {
 		<div>
 			<div
 				onClick={handleSidebar}
-				className={`${ openSidebar ? "sidebar-overlay" : "hidden" } block sm:hidden`}
+				className={`${
+					openSidebar ? "sidebar-overlay" : "hidden"
+				} block sm:hidden`}
 			></div>
 			{openDialog && (
 				<Dialog handleCancel={handleCancel} setIsDelete={setIsDelete} />

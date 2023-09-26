@@ -1,11 +1,49 @@
 "use client";
-import withAuth from "@/HOC/withAuth";
+import { useEffect } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import Conversation from "@/components/Conversation";
 import AutoExpandingTextarea from "@/components/AutoExpandingTextarea";
 
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { userLoggedIn } from "@/store/slices/authSlice";
+import { getCookie } from "cookies-next";
+
 const Home = () => {
+	const dispatch = useDispatch();
+
+	const { data: session, status } = useSession({
+		required: true,
+		onUnauthenticated() {
+			redirect("/api/auth/signin?callbackUrl=/");
+		},
+	});
+
+	console.log("session", session);
+
+	useEffect(() => {
+		const cookieUser = getCookie("user");
+		const token = getCookie("token");
+
+		if (token && cookieUser) {
+			const user = JSON.parse(cookieUser);
+			if (token && user) {
+				dispatch(
+					userLoggedIn({
+						token,
+						user,
+					})
+				);
+			}
+		}
+	}, [dispatch]);
+
+	if (status === "loading") {
+		return null;
+	}
+
 	return (
 		<div className="h-screen">
 			<nav className="w-full bg-dark-primary">
@@ -26,4 +64,4 @@ const Home = () => {
 	);
 };
 
-export default withAuth(Home);
+export default Home;

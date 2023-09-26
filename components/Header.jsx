@@ -2,8 +2,10 @@
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 import { setOpenSidebar } from "@/store/slices/uiSlice";
+import { useSession } from "next-auth/react";
 
 const Header = () => {
+	const { data: session } = useSession();
 	const dispatch = useDispatch();
 	const { openSidebar } = useSelector((state) => state.ui);
 
@@ -73,7 +75,7 @@ const Header = () => {
 									height="32"
 									width="32"
 									className="w-8 h-8 rounded-full"
-									src="/assets/bot.png"
+									src={session?.user?.image}
 									alt="user photo"
 								/>
 							</button>
