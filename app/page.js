@@ -1,9 +1,11 @@
+"use client";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import Conversation from "@/components/Conversation";
 import AutoExpandingTextarea from "@/components/AutoExpandingTextarea";
+import withAuth from "@/HOC/withAuth";
 
-export default function Home() {
+const Home = () => {
 	return (
 		<div className="h-screen">
 			<nav className="w-full bg-dark-primary">
@@ -22,4 +24,6 @@ export default function Home() {
 			</section>
 		</div>
 	);
-}
+};
+
+export default withAuth(Home);

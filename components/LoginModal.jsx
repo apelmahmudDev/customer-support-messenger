@@ -11,8 +11,8 @@ import { validateForm } from "@/lib/validateForm";
 import { useLoginMutation } from "@/store/api/authApi";
 
 const LoginModal = () => {
-	const [ login, { isLoading, isError, error } ] = useLoginMutation(); 
-	
+	const [login, { data, isLoading, isError, error }] = useLoginMutation();
+
 	const [showPassword, setShowPassword] = useState(false);
 	const [errors, setErrors] = useState({});
 	const [formData, setFormData] = useState({
@@ -88,13 +88,7 @@ const LoginModal = () => {
 							/>
 							<PasswordTypeButton
 								onClick={() => setShowPassword((prev) => !prev)}
-								icon={
-									showPassword ? (
-										<OpenEyeIcon />
-									) : (
-										<CloseEyeIcon />
-									)
-								}
+								icon={showPassword ? <OpenEyeIcon /> : <CloseEyeIcon />}
 							/>
 						</div>
 						{errors.password && (
@@ -104,7 +98,7 @@ const LoginModal = () => {
 						)}
 					</div>
 					<div className="flex flex-col space-y-1">
-						<AuthButton type="submit" isLoading={ isLoading }/>
+						<AuthButton type="submit" isLoading={isLoading} />
 					</div>
 					<p className="text-sm md:text-md text-dark-primary break-all text-center">
 						Don’t have an account?{" "}
