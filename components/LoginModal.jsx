@@ -1,21 +1,26 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Input from "./Input";
 import AuthButton from "./AuthButton";
 import GoogleIcon from "./GoogleIcon";
 import OpenEyeIcon from "./OpenEyeIcon";
 import CloseEyeIcon from "./CloseEyeIcon";
-import { useRouter } from "next/navigation";
 import PasswordTypeButton from "./PasswordTypeButton";
 import LoginProviderButton from "./LoginProviderButton";
 import { validateForm } from "@/lib/validateForm";
 import { useLoginMutation } from "@/store/api/authApi";
-import useAuth from "@/hook/useAuth";
 import WarningIcon from "./WarningIcon";
+import { signIn, useSession } from "next-auth/react";
+import { setCookie } from "cookies-next";
+import { userLoggedIn } from "@/store/slices/authSlice";
+import { useDispatch } from "react-redux";
+import FacebookIcon from "./FacebookIcon";
+const { redirect } = require("next/navigation");
 
 const LoginModal = () => {
-	const router = useRouter();
-	const isAuth = useAuth();
+	const dispatch = useDispatch();
+	const { data: session, status } = useSession();
+	const [loading, setLoading] = useState(false);
 	const [login, { isLoading, isError, error }] = useLoginMutation();
 
 	const [showPassword, setShowPassword] = useState(false);
@@ -30,7 +35,7 @@ const LoginModal = () => {
 		setFormData({ ...formData, [name]: value });
 	};
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 		const validationErrors = validateForm(formData);
 		setErrors(validationErrors);
@@ -38,15 +43,40 @@ const LoginModal = () => {
 		// Handle form submission logic here...
 		const keys = Object.keys(validationErrors);
 		if (keys.length === 0) {
-			login(formData);
+			// login(formData);
+			try {
+				setLoading(true);
+				const resp = await signIn("credentials", {
+					email: formData.email,
+					password: formData.password,
+					redirect: false,
+				});
+				setLoading(false);
+			} catch (error) {
+				setLoading(false);
+			}
 		}
 	};
 
 	useEffect(() => {
-		if (isAuth) {
-			router.push("/");
+		if (session?.access_token && session?.user) {
+			setCookie("token", session?.access_token);
+			setCookie("user", session?.user);
+
+			dispatch(
+				userLoggedIn({
+					token: session?.access_token,
+					user: session?.user,
+				})
+			);
 		}
-	}, [isAuth, router]);
+	}, [dispatch, session?.access_token, session?.user]);
+
+	useEffect(() => {
+		if (status === "authenticated") {
+			redirect("/");
+		}
+	});
 
 	return (
 		<div className="auth-shadow max-w-md md:max-w-lg w-full bg-white p-8 sm:p-10 rounded-2xl lg:rounded-3xl">
@@ -55,8 +85,14 @@ const LoginModal = () => {
 			</h3>
 			<div className="space-y-4 md:space-y-6">
 				<LoginProviderButton
+					onClick={() => signIn("google")}
 					title="Continue with Google"
 					icon={<GoogleIcon />}
+				/>
+				<LoginProviderButton
+					onClick={() => signIn("facebook")}
+					title="Continue with Facebook"
+					icon={<FacebookIcon />}
 				/>
 			</div>
 			<p className="text-center my-5 text-sm md:text-base text-dark-primary break-all">
@@ -114,7 +150,6 @@ const LoginModal = () => {
 							</span>
 						)}
 					</div>
-
 					{!isLoading && isError && (
 						<div className="flex items-center gap-2 text-xs text-red-600 break-all">
 							<WarningIcon />
@@ -123,14 +158,9 @@ const LoginModal = () => {
 							</span>
 						</div>
 					)}
-
 					<div className="flex flex-col space-y-1">
-						<AuthButton type="submit" isLoading={isLoading} />
+						<AuthButton type="submit" isLoading={loading} />
 					</div>
-					<p className="text-sm md:text-md text-dark-primary break-all text-center">
-						Don’t have an account?{" "}
-						<strong className="underline">Register for free</strong>
-					</p>
 				</div>
 			</form>
 		</div>
