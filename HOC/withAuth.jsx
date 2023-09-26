@@ -7,7 +7,6 @@ import { useSelector } from "react-redux";
 const withAuth = (WrappedComponent) => {
 	const WithAuth = (props) => {
 		const { token } = useSelector((state) => state.auth);
-		console.log("token", token);
 
 		const router = useRouter();
 

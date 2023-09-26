@@ -11,8 +11,6 @@ const TempInput = () => {
 
 	const { data } = useGetChatMessageQuery(conversationId);
 
-	console.log("data", data);
-
 	const [storeChat, { isLoading, isSuccess, isError, error }] =
 		useStoreChatMutation();
 
