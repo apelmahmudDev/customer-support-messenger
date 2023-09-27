@@ -35,6 +35,7 @@ export const options = {
 						headers: { "Content-Type": "application/json" },
 					}
 				);
+				
 				const user = await res.json();
 
 				if (user?.response?.status?.message === "OK") {
@@ -46,7 +47,7 @@ export const options = {
 						access_token: user?.response?.records?.token,
 					};
 				} else {
-					return null;
+					throw new Error( JSON.stringify(user?.response?.status?.message))
 				}
 			},
 		}),

@@ -121,7 +121,7 @@ const Conversation = () => {
 					className="relative flex-1 overflow-y-auto mx-auto w-full p-4 flex flex-col-reverse"
 				>
 					<InfiniteScroll
-						dataLength={messages?.data?.length}
+						dataLength={messages?.data?.length || 0}
 						next={fetchMore}
 						inverse={true}
 						hasMore={hasMore}
