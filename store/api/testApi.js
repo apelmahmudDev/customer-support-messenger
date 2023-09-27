@@ -91,7 +91,10 @@ export const testApi = apiSlice.injectEndpoints({
 					body: { promt: body.promt, chatId: body.conversationId },
 				};
 			},
-			async onQueryStarted({ conversationId, promt },{ dispatch, queryFulfilled }) {
+			async onQueryStarted(
+				{ conversationId, promt },
+				{ dispatch, queryFulfilled }
+			) {
 				// optimistic update start
 				const patch = {
 					user_message: promt,
@@ -99,7 +102,10 @@ export const testApi = apiSlice.injectEndpoints({
 					isTemp: true,
 				};
 				const patchResult = dispatch(
-					apiSlice.util.updateQueryData("getChatMessage", conversationId, (draft) => {
+					apiSlice.util.updateQueryData(
+						"getChatMessage",
+						conversationId,
+						(draft) => {
 							draft.data.push(patch);
 						}
 					)
@@ -107,7 +113,9 @@ export const testApi = apiSlice.injectEndpoints({
 				try {
 					await queryFulfilled;
 				} catch {
-					patchResult.undo();	
+					patchResult.undo();
+					dispatch(storeTempMessage(null));
+					dispatch(setBotTyping(false));
 				}
 				// optimistic update end
 			},
@@ -130,7 +138,9 @@ export const testApi = apiSlice.injectEndpoints({
 							"getConversation",
 							undefined,
 							(draft) => {
-								draft.data = draft.data.filter((item) => item.id !== chatId);
+								draft.data = draft.data.filter(
+									(item) => item.id !== chatId
+								);
 							}
 						)
 					);
@@ -147,7 +157,6 @@ export const testApi = apiSlice.injectEndpoints({
 			},
 			// invalidatesTags: ["Chat"],
 		}),
-		
 	}),
 	overrideExisting: true,
 });
