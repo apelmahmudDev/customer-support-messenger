@@ -21,8 +21,6 @@ const Home = () => {
 		},
 	});
 
-	console.log("session", session);
-
 	useEffect(() => {
 		const cookieUser = getCookie("user");
 		const token = getCookie("token");
