@@ -140,7 +140,7 @@ const Sidebar = () => {
 	if (isSuccess) {
 		render = (
 			<InfiniteScroll
-				dataLength={conversation?.data?.length}
+				dataLength={conversation?.data?.length || 0}
 				next={fetchMore}
 				hasMore={hasMore}
 				loader={

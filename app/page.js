@@ -17,11 +17,9 @@ const Home = () => {
 	const { data: session, status } = useSession({
 		required: true,
 		onUnauthenticated() {
-			redirect("/api/auth/signin?callbackUrl=/");
+			redirect("/login");
 		},
 	});
-
-	console.log("session", session);
 
 	useEffect(() => {
 		const cookieUser = getCookie("user");

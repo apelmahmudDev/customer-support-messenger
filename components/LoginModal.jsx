@@ -21,6 +21,7 @@ const LoginModal = () => {
 	const dispatch = useDispatch();
 	const { data: session, status } = useSession();
 	const [loading, setLoading] = useState(false);
+	const [errorMessage, setErrorMessage] = useState('');
 	const [login, { isLoading, isError, error }] = useLoginMutation();
 
 	const [showPassword, setShowPassword] = useState(false);
@@ -52,6 +53,9 @@ const LoginModal = () => {
 					redirect: false,
 				});
 				setLoading(false);
+				if (resp?.error) {
+					setErrorMessage(JSON.parse(resp?.error));
+				}
 			} catch (error) {
 				setLoading(false);
 			}
@@ -150,11 +154,11 @@ const LoginModal = () => {
 							</span>
 						)}
 					</div>
-					{!isLoading && isError && (
+					{!loading && errorMessage && (
 						<div className="flex items-center gap-2 text-xs text-red-600 break-all">
 							<WarningIcon />
 							<span>
-								{error?.data?.response?.status?.message}
+								{errorMessage}
 							</span>
 						</div>
 					)}
