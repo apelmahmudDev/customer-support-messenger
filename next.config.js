@@ -10,6 +10,15 @@ const nextConfig = {
 		unoptimized: process.env.NODE_ENV === "production" ? true : false,
 		domains: ["staging.artifism.techvill.net", "lh3.googleusercontent.com"],
 	},
+	async redirects() {
+		return [
+		  {
+			source: '/about',
+			destination: '/',
+			permanent: true,
+		  },
+		]
+	  },
 };
 
 module.exports = nextConfig;

@@ -1,9 +1,9 @@
 import formatTimeAgo from "@/lib/formatTime";
 import Image from "next/image";
-import { useSession } from "next-auth/react";
+import { useSelector } from "react-redux";
 
 const UserMessage = ({ chat }) => {
-	const { data: session } = useSession();
+	const { auth } = useSelector((state) => state);
 	return (
 		<div className="mb-4 flex gap-2.5 items-start justify-end">
 			<div>
@@ -22,7 +22,7 @@ const UserMessage = ({ chat }) => {
 			</div>
 			<Image
 				className="shrink-0 w-8 h-8 rounded-full"
-				src={session?.user?.image}
+				src={auth?.user?.picture}
 				alt="user"
 				height="32"
 				width="32"
