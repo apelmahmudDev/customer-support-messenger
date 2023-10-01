@@ -1,5 +1,4 @@
 "use client";
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Spinner from "./Spinner";
 import Dialog from "./Dialog";
@@ -17,7 +16,6 @@ import {
 } from "@/store/api/testApi";
 
 const Sidebar = () => {
-	const { data: session, status } = useSession();
 	const dispatch = useDispatch();
 	const { openSidebar } = useSelector((state) => state.ui);
 	const { conversationId } = useSelector((state) => state.chat);

@@ -10,19 +10,19 @@ import LoginProviderButton from "./LoginProviderButton";
 import { validateForm } from "@/lib/validateForm";
 import { useLoginMutation } from "@/store/api/authApi";
 import WarningIcon from "./WarningIcon";
-import { signIn, useSession } from "next-auth/react";
 import { setCookie } from "cookies-next";
-import { userLoggedIn } from "@/store/slices/authSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import FacebookIcon from "./FacebookIcon";
-const { redirect } = require("next/navigation");
+import { useRouter } from 'next/navigation'
+
 
 const LoginModal = () => {
+	const router = useRouter()
 	const dispatch = useDispatch();
-	const { data: session, status } = useSession();
 	const [loading, setLoading] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
 	const [login, { isLoading, isError, error }] = useLoginMutation();
+	const { auth } = useSelector((state) => state);
 
 	const [showPassword, setShowPassword] = useState(false);
 	const [errors, setErrors] = useState({});
@@ -44,43 +44,15 @@ const LoginModal = () => {
 		// Handle form submission logic here...
 		const keys = Object.keys(validationErrors);
 		if (keys.length === 0) {
-			// login(formData);
-			try {
-				setLoading(true);
-				const resp = await signIn("credentials", {
-					email: formData.email,
-					password: formData.password,
-					redirect: false,
-				});
-				setLoading(false);
-				if (resp?.error) {
-					setErrorMessage(JSON.parse(resp?.error));
-				}
-			} catch (error) {
-				setLoading(false);
-			}
+			login(formData)
 		}
 	};
 
 	useEffect(() => {
-		if (session?.access_token && session?.user) {
-			setCookie("token", session?.access_token);
-			setCookie("user", session?.user);
-
-			dispatch(
-				userLoggedIn({
-					token: session?.access_token,
-					user: session?.user,
-				})
-			);
+		if(auth?.token && auth?.user) {
+			router.push('/')
 		}
-	}, [dispatch, session?.access_token, session?.user]);
-
-	useEffect(() => {
-		if (status === "authenticated") {
-			redirect("/");
-		}
-	});
+	}, [ auth, router]);
 
 	return (
 		<div className="auth-shadow max-w-md md:max-w-lg w-full bg-white p-8 sm:p-10 rounded-2xl lg:rounded-3xl">
@@ -154,16 +126,16 @@ const LoginModal = () => {
 							</span>
 						)}
 					</div>
-					{!loading && errorMessage && (
+					{!loading && isError && (
 						<div className="flex items-center gap-2 text-xs text-red-600 break-all">
 							<WarningIcon />
 							<span>
-								{errorMessage}
+								{error?.data?.response?.status?.message}
 							</span>
 						</div>
 					)}
 					<div className="flex flex-col space-y-1">
-						<AuthButton type="submit" isLoading={loading} />
+						<AuthButton type="submit" isLoading={isLoading} />
 					</div>
 				</div>
 			</form>

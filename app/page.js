@@ -4,22 +4,18 @@ import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import Conversation from "@/components/Conversation";
 import AutoExpandingTextarea from "@/components/AutoExpandingTextarea";
-
-import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { userLoggedIn } from "@/store/slices/authSlice";
 import { getCookie } from "cookies-next";
+import { redirect } from "next/navigation";
+import useAuthCheck from "@/hook/useAuthCheck";
+import withAuth from "@/HOC/withAuth";
+import Spinner from "@/components/Spinner";
 
 const Home = () => {
+	const authChecked = useAuthCheck()
 	const dispatch = useDispatch();
-
-	const { data: session, status } = useSession({
-		required: true,
-		onUnauthenticated() {
-			redirect("/login");
-		},
-	});
+	const { auth } = useSelector((state) => state);
 
 	useEffect(() => {
 		const cookieUser = getCookie("user");
@@ -38,8 +34,17 @@ const Home = () => {
 		}
 	}, [dispatch]);
 
-	if (status === "loading") {
-		return null;
+	// if not token or user, redirect to login
+	useEffect(() => {
+		if (!auth?.token || !auth?.user) {
+			redirect("/login");
+		}
+	}, [auth?.token, auth?.user]);
+
+	if (!authChecked) {
+		return <div className="h-screen w-full flex items-center justify-center">
+			<Spinner />
+		</div>
 	}
 
 	return (
@@ -62,4 +67,4 @@ const Home = () => {
 	);
 };
 
-export default Home;
+export default withAuth(Home);

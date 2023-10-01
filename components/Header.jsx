@@ -2,11 +2,10 @@
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 import { setOpenSidebar } from "@/store/slices/uiSlice";
-import { useSession } from "next-auth/react";
 
 const Header = () => {
-	const { data: session } = useSession();
 	const dispatch = useDispatch();
+	const { auth } = useSelector((state) => state);
 	const { openSidebar } = useSelector((state) => state.ui);
 
 	const handleSidebar = () => {
@@ -75,7 +74,7 @@ const Header = () => {
 									height="32"
 									width="32"
 									className="w-8 h-8 rounded-full"
-									src={session?.user?.image}
+									src={auth?.user?.picture}
 									alt="user photo"
 								/>
 							</button>
