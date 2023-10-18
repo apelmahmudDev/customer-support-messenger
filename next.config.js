@@ -12,7 +12,8 @@ const nextConfig = {
 				headers: [
 					{
 						key: "X-Frame-Options",
-						value: "SAMEORIGIN",
+						// value: "SAMEORIGIN",
+						value: "ALLOW-FROM http://127.0.0.1:5501/test/index.html",
 					},
 				],
 			},
